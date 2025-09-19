@@ -98,13 +98,36 @@ window.Moves = (function() {
                     // Add a small delay to ensure DOM is fully updated
                     setTimeout(() => {
                         window.Persistence.refreshPersistence(form);
+                        // After persistence is refreshed, restore any granted cards
+                        restoreGrantedCards();
                     }, 50);
                 }
             }
         }
     }
 
-
+    /**
+     * Restore granted cards for checked moves after persistence load
+     * This is needed because card display only happens on change events,
+     * not when checkboxes are programmatically set during persistence restoration
+     */
+    function restoreGrantedCards() {
+        if (!window.moves) return;
+        
+        // Find all moves that grant cards
+        const cardGrantingMoves = window.moves.filter(move => move.grantsCard);
+        
+        cardGrantingMoves.forEach(move => {
+            const checkbox = document.getElementById(`move_${move.id}`);
+            if (checkbox && checkbox.checked) {
+                // This move is checked and grants a card - display the card
+                const containerId = `granted_card_${move.id}`;
+                if (window.InlineCards) {
+                    window.InlineCards.toggleCardDisplay(move.id, move.grantsCard, containerId, true);
+                }
+            }
+        });
+    }
 
     // Public API
     return {
