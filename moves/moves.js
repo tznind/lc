@@ -98,8 +98,10 @@ window.Moves = (function() {
                     // Add a small delay to ensure DOM is fully updated
                     setTimeout(() => {
                         window.Persistence.refreshPersistence(form);
-                        // After persistence is refreshed, restore any granted cards
-                        restoreGrantedCards();
+                        // After persistence is refreshed, restore any granted cards with additional delay
+                        setTimeout(() => {
+                            restoreGrantedCards();
+                        }, 100);
                     }, 50);
                 }
             }
@@ -112,21 +114,31 @@ window.Moves = (function() {
      * not when checkboxes are programmatically set during persistence restoration
      */
     function restoreGrantedCards() {
-        if (!window.moves) return;
+        console.log('restoreGrantedCards: Starting restoration');
+        if (!window.moves) {
+            console.log('restoreGrantedCards: No moves data available');
+            return;
+        }
         
         // Find all moves that grant cards
         const cardGrantingMoves = window.moves.filter(move => move.grantsCard);
+        console.log('restoreGrantedCards: Found card-granting moves:', cardGrantingMoves.map(m => ({id: m.id, grantsCard: m.grantsCard})));
         
         cardGrantingMoves.forEach(move => {
             const checkbox = document.getElementById(`move_${move.id}`);
+            console.log(`restoreGrantedCards: Checking move ${move.id}, checkbox:`, checkbox, 'checked:', checkbox ? checkbox.checked : 'N/A');
             if (checkbox && checkbox.checked) {
                 // This move is checked and grants a card - display the card
                 const containerId = `granted_card_${move.id}`;
+                console.log(`restoreGrantedCards: Restoring card ${move.grantsCard} for move ${move.id} in container ${containerId}`);
                 if (window.InlineCards) {
                     window.InlineCards.toggleCardDisplay(move.id, move.grantsCard, containerId, true);
+                } else {
+                    console.log('restoreGrantedCards: InlineCards not available');
                 }
             }
         });
+        console.log('restoreGrantedCards: Restoration complete');
     }
 
     // Public API

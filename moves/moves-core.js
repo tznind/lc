@@ -143,16 +143,9 @@ window.MovesCore = (function() {
         const containerId = `granted_card_${move.id}`;
         const cardSection = window.InlineCards.createCardContainer(containerId, "Grants:");
         
-        // Use the existing isMoveTaken function to check if move is selected
-        const isTaken = isMoveTaken(move, urlParams);
-        
-        if (isTaken) {
-            // Show the card immediately if taken
-            window.InlineCards.displayCard(containerId, move.grantsCard);
-        } else {
-            // Hide initially
-            cardSection.style.display = 'none';
-        }
+        // Don't show the card immediately during render - let restoreGrantedCards handle it
+        // This prevents timing issues where the container exists but DOM isn't fully ready
+        cardSection.style.display = 'none';
         
         return cardSection;
     }

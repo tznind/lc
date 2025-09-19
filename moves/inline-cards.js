@@ -13,8 +13,13 @@ window.InlineCards = (function() {
      * @param {string} className - CSS class for the card wrapper (optional)
      */
     async function displayCard(containerId, cardId, className = 'granted-card') {
+        console.log(`displayCard: containerId=${containerId}, cardId=${cardId}`);
         const container = document.getElementById(containerId);
-        if (!container || !cardId) return;
+        console.log(`displayCard: container found:`, container);
+        if (!container || !cardId) {
+            console.log(`displayCard: Missing container or cardId - container: ${container}, cardId: ${cardId}`);
+            return;
+        }
 
         try {
             if (window.Cards) {
@@ -91,6 +96,9 @@ window.InlineCards = (function() {
      * @param {boolean} isChecked - Whether the move is checked
      */
     function toggleCardDisplay(moveId, cardId, containerId, isChecked) {
+        console.log(`toggleCardDisplay: moveId=${moveId}, cardId=${cardId}, containerId=${containerId}, isChecked=${isChecked}`);
+        const container = document.getElementById(containerId);
+        console.log(`toggleCardDisplay: container found:`, container);
         if (isChecked) {
             displayCard(containerId, cardId);
         } else {
