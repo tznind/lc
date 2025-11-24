@@ -51,11 +51,11 @@ window.Layout = (function() {
             // Get merged availability for selected roles
             const mergedAvailability = window.Utils.mergeRoleAvailability(selectedRoles);
             
-            // Render cards first (they don't depend on moves)
-            await renderCards(selectedRoles, mergedAvailability);
+            // Render cards first (returns loaded cards including categorized ones)
+            const loadedCards = await renderCards(selectedRoles, mergedAvailability);
             
-            // Then render moves (including inline cards)
-            await renderMoves(selectedRoles, mergedAvailability, urlParams);
+            // Then render moves (pass loaded cards for categorized card rendering)
+            await renderMoves(selectedRoles, mergedAvailability, urlParams, loadedCards);
             
             // Restore collapse state instead of expanding all
             if (window.MovesCore && moveCollapseState) {
@@ -128,17 +128,20 @@ window.Layout = (function() {
     
     /**
      * Render cards for selected roles
+     * @returns {Promise<Array>} Array of loaded card data
      */
     async function renderCards(roles, mergedAvailability) {
         if (window.Cards) {
-            await window.Cards.renderCardsForRole(roles, mergedAvailability);
+            return await window.Cards.renderCardsForRole(roles, mergedAvailability);
         }
+        return [];
     }
     
     /**
      * Render moves for selected roles
+     * @param {Array} loadedCards - Optional array of loaded card data for categorized cards
      */
-    async function renderMoves(roles, mergedAvailability, urlParams) {
+    async function renderMoves(roles, mergedAvailability, urlParams, loadedCards = null) {
         const movesContainer = document.getElementById("moves");
         if (!movesContainer) return;
         
@@ -146,7 +149,7 @@ window.Layout = (function() {
         movesContainer.style.display = 'block';
         
         if (window.MovesCore) {
-            window.MovesCore.renderMovesForRole(roles, mergedAvailability);
+            window.MovesCore.renderMovesForRole(roles, mergedAvailability, loadedCards);
             
             // Initialize track counters after moves are rendered
             if (window.Track) {
@@ -228,7 +231,10 @@ window.Layout = (function() {
                     if (selectedRoles.length > 0) {
                         const mergedAvailability = window.Utils.mergeRoleAvailability(selectedRoles);
                         const urlParams = new URLSearchParams(location.search);
-                        await renderMoves(selectedRoles, mergedAvailability, urlParams);
+                        
+                        // Get loaded cards for categorized rendering
+                        const loadedCards = await renderCards(selectedRoles, mergedAvailability);
+                        await renderMoves(selectedRoles, mergedAvailability, urlParams, loadedCards);
 
                         // Initialize track counters after moves are rendered
                         if (window.Track) {

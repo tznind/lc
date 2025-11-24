@@ -333,9 +333,10 @@ window.TakeFrom = (function() {
         if (selectedRole && window.availableMap && window.availableMap[selectedRole]) {
             moveSelect.disabled = false;
             
-            // Get the source move to check for takeCategory filter
+            // Get the source move to check for takeCategory and takeMove filters
             const sourceMove = window.moves && window.moves.find(m => m.id === moveId);
             const takeCategoryFilter = sourceMove && sourceMove.takeCategory ? sourceMove.takeCategory : null;
+            const takeMoveFilter = sourceMove && sourceMove.takeMove ? sourceMove.takeMove : null;
             
             // Get available moves for selected role and current roles
             const availableMoves = window.availableMap[selectedRole];
@@ -359,6 +360,14 @@ window.TakeFrom = (function() {
                 if (move.id !== moveId && 
                     availableMoves.hasOwnProperty(move.id) && 
                     !currentRolesMoves.hasOwnProperty(move.id)) {
+                    
+                    // Apply specific move ID filtering if takeMove is specified
+                    // This is the most specific filter - if provided, only these exact moves are allowed
+                    if (takeMoveFilter && Array.isArray(takeMoveFilter) && takeMoveFilter.length > 0) {
+                        if (!takeMoveFilter.includes(move.id)) {
+                            return; // Skip this move as it's not in the allowed move list
+                        }
+                    }
                     
                     // Apply category filtering if takeCategory is specified
                     if (takeCategoryFilter && Array.isArray(takeCategoryFilter) && takeCategoryFilter.length > 0) {

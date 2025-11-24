@@ -374,7 +374,9 @@ Beyond basic roll-based moves, the system supports several specialized move type
 
 **When to use:** If a move allows you to pick a move from another role.
 
-#### Structure
+The `takeFrom` system supports powerful filtering options that can be combined for fine-grained control over which moves are available for selection.
+
+#### Basic Structure
 
 <table>
 <tr>
@@ -389,11 +391,142 @@ Beyond basic roll-based moves, the system supports several specialized move type
 </pre>
 </td> <td> <img alt="image" src="https://github.com/user-attachments/assets/1747a931-4fd0-4d84-af96-30bc370f70b7" /> </td> </tr> </table>
 
-
 **Key Features:**
 - `takeFrom` lists roles this character can learn from
 - Creates dropdown menus populated with moves from those roles
 - Allows character versatility and cross-class abilities
+- Supports wildcard patterns and advanced filtering
+
+#### Advanced Filtering
+
+All three filter types can be combined to create precisely targeted move selections:
+
+**1. Role Filtering (`takeFrom`)**
+
+`takeFrom` accepts an array of role names and supports wildcard patterns:
+
+```json
+{
+  "id": "versatile",
+  "title": "Versatile Training",
+  "takeFrom": ["*"]  // All roles
+}
+```
+
+```json
+{
+  "id": "combat_training",
+  "title": "Combat Training",
+  "takeFrom": ["Lord Commander", "Mech Adept", "Navigator"]  // Specific roles
+}
+```
+
+```json
+{
+  "id": "void_training",
+  "title": "Void Training",
+  "takeFrom": ["Void*"]  // All roles starting with "Void"
+}
+```
+
+**2. Category Filtering (`takeCategory`)**
+
+Narrow down moves by their category. Moves without an explicit `category` are treated as "Moves":
+
+```json
+{
+  "id": "adapt1",
+  "title": "Adaptable",
+  "takeFrom": ["*"],
+  "takeCategory": ["Moves"]  // Only moves in the "Moves" category
+}
+```
+
+```json
+{
+  "id": "gear_expert",
+  "title": "Gear Expert",
+  "takeFrom": ["*"],
+  "takeCategory": ["Equipment", "Advancement"]  // Multiple categories
+}
+```
+
+**3. Specific Move Filtering (`takeMove`)**
+
+For the finest control, specify exact move IDs:
+
+```json
+{
+  "id": "limited_training",
+  "title": "Limited Training",
+  "takeFrom": ["Lord Commander"],
+  "takeMove": ["l1a2b3", "inspire1"]  // Only these specific moves
+}
+```
+
+#### Combined Filtering Examples
+
+**Example 1: Combat moves from any role**
+```json
+{
+  "id": "combat_specialist",
+  "title": "Combat Specialist",
+  "description": "Learn a combat technique from any role",
+  "takeFrom": ["*"],
+  "takeCategory": ["Moves"]
+}
+```
+
+**Example 2: Specific moves from specific roles**
+```json
+{
+  "id": "elite_training",
+  "title": "Elite Training",
+  "description": "Learn one of the signature moves from the Lord Commander",
+  "takeFrom": ["Lord Commander"],
+  "takeMove": ["l1a2b3", "l4c5d6", "l7e8f9"]
+}
+```
+
+**Example 3: Equipment from void-related roles**
+```json
+{
+  "id": "void_gear",
+  "title": "Void Gear Specialist",
+  "description": "Acquire equipment from void specialists",
+  "takeFrom": ["Void*", "Navigator"],
+  "takeCategory": ["Equipment"]
+}
+```
+
+**Example 4: Multiple instances with different filters**
+```json
+{
+  "id": "multi_train",
+  "title": "Diverse Training",
+  "description": "Learn multiple techniques",
+  "multiple": 3,
+  "takeFrom": ["*"],
+  "takeCategory": ["Moves", "Advancement"]
+}
+```
+
+#### Filter Priority
+
+Filters work together with AND logic:
+1. **Role filter** (`takeFrom`): Move must be from one of these roles
+2. **Move filter** (`takeMove`): If specified, move must be in this list (most specific)
+3. **Category filter** (`takeCategory`): Move must be in one of these categories
+4. **Exclusions**: Moves already available to current roles are automatically excluded
+
+#### Notes
+
+- All filter arrays support multiple values
+- Filters are optional - omit them to not apply that filter
+- The `*` wildcard in `takeFrom` matches all available roles
+- Wildcard patterns support prefix matching: `"Void*"` matches "Void Walker", "Voidmaster", etc.
+- Roles already possessed by the character are automatically excluded from `takeFrom`
+- The "Everyone" role is never included in `takeFrom` lists
 
 ### Move Categories
 
@@ -597,6 +730,69 @@ Cards can also be added directly to roles (i.e. if a move is not required and ro
 - `grantsCard` references a card by its folder name
 - The card must exist in `data/cards/[card-name]/`
 - Cards appear inline when the move is selected
+
+### Categorized Cards
+
+**When to use:** To organize cards under specific category sections instead of at the top of the character sheet.
+
+Cards can be assigned to categories by adding a `category` field to their `card.json` definition. Categorized cards:
+- Appear under their assigned category header in the moves section
+- Are NOT individually collapsible (the category itself provides collapsibility)
+- Are mixed with moves in the same category
+- Perfect for organizing equipment, companions, or other thematic groupings
+
+#### Example: Equipment Card
+
+```json
+{
+  "id": "weapons",
+  "title": "Weapons & Gear",
+  "path": "data/cards/weapons",
+  "description": "Track your weapons and equipment",
+  "version": "1.0.0",
+  "author": "Your Name",
+  "category": "Equipment",
+  "files": {
+    "html": "card.html"
+  }
+}
+```
+_data/cards/weapons/card.json_
+
+```html
+<div class="card weapons-card">
+  <h3>Weapons & Gear</h3>
+  <div class="form-field">
+    <label for="weapon_primary">Primary Weapon:</label>
+    <input type="text" id="weapon_primary" placeholder="Plasma rifle">
+  </div>
+  <div class="form-field">
+    <label for="weapon_secondary">Secondary Weapon:</label>
+    <input type="text" id="weapon_secondary" placeholder="Power sword">
+  </div>
+</div>
+```
+_data/cards/weapons/card.html_
+
+Assign the card to a role:
+
+```json
+{
+  "Navigator": {
+    "_movesFile": "data/moves/navigator.json",
+    "cards": ["weapons"]
+  }
+}
+```
+_data/availability.json_
+
+**Key Features:**
+- Add `"category": "Category Name"` to `card.json` to categorize a card
+- Cards without a `category` appear at the top under "Character" (collapsible)
+- Cards with a `category` appear under that category header (not individually collapsible)
+- Category headers count includes both moves and cards
+- Cards are rendered before moves in the same category
+- Use the same category names as your moves for logical grouping
 
 ## Cards System
 

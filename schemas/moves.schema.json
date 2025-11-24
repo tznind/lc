@@ -82,6 +82,14 @@
           "examples": ["Moves", "Equipment", "Advancement"]
         }
       },
+      "takeMove": {
+        "type": "array",
+        "description": "Optional array of specific move IDs to filter when using takeFrom. If specified, only these exact moves will be available for selection (subject to role availability). Provides finest-grained control over which moves can be learned. Can be combined with takeFrom and takeCategory for precise filtering.",
+        "items": {
+          "type": "string",
+          "examples": ["l1a2b3", "inspire1", "battlehard"]
+        }
+      },
       "multiple": {
         "type": "integer",
         "description": "Number of checkboxes to show (for moves that can be taken multiple times)",

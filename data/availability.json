@@ -2,7 +2,7 @@
   "Navigator": {
     "_movesFile": "data/moves/navigator.json",
     "description": "Expert in charting courses through unknown space and navigating dangerous stellar phenomena.\n\nNavigators possess a **third eye** that allows them to *perceive the warp* and guide ships through the immaterium.",
-    "cards": [],
+    "cards": ["test-equipment"],
     "a1b2c3": true,
     "d4e5f6": false,
     "g7h8i9": true,
@@ -21,7 +21,8 @@
     "85757e": false,
     "ac001": false,
     "is": false,
-    "oddsends": false
+    "oddsends": false,
+    "elite_training": false
   },
   "Lord Commander": {
     "_movesFile": "data/moves/lord-commander.json",

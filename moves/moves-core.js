@@ -672,13 +672,14 @@ window.MovesCore = (function() {
         
         const isCurrentlyCollapsed = headerElement.classList.contains('collapsed');
         
-        // Find all moves in this category (next siblings until next header or end)
-        const categoryMoves = [];
+        // Find all items in this category (moves and categorized cards)
+        // Next siblings until next header or end
+        const categoryItems = [];
         let nextElement = headerElement.nextElementSibling;
         
         while (nextElement && !nextElement.classList.contains('category-header')) {
-            if (nextElement.classList.contains('move')) {
-                categoryMoves.push(nextElement);
+            if (nextElement.classList.contains('move') || nextElement.classList.contains('categorized-card')) {
+                categoryItems.push(nextElement);
             }
             nextElement = nextElement.nextElementSibling;
         }
@@ -688,16 +689,16 @@ window.MovesCore = (function() {
             headerElement.classList.remove('collapsed');
             triangle.textContent = "▼"; // Down arrow
             headerElement.setAttribute('aria-expanded', 'true');
-            categoryMoves.forEach(move => {
-                move.style.display = '';
+            categoryItems.forEach(item => {
+                item.style.display = '';
             });
         } else {
             // Collapse
             headerElement.classList.add('collapsed');
             triangle.textContent = "▶"; // Right arrow
             headerElement.setAttribute('aria-expanded', 'false');
-            categoryMoves.forEach(move => {
-                move.style.display = 'none';
+            categoryItems.forEach(item => {
+                item.style.display = 'none';
             });
         }
     }
@@ -759,13 +760,13 @@ window.MovesCore = (function() {
             const triangle = headerElement.querySelector('.tree-triangle');
             if (!triangle) return;
             
-            // Find all moves in this category (next siblings until next header or end)
-            const categoryMoves = [];
+            // Find all items in this category (moves and categorized cards)
+            const categoryItems = [];
             let nextElement = headerElement.nextElementSibling;
             
             while (nextElement && !nextElement.classList.contains('category-header')) {
-                if (nextElement.classList.contains('move')) {
-                    categoryMoves.push(nextElement);
+                if (nextElement.classList.contains('move') || nextElement.classList.contains('categorized-card')) {
+                    categoryItems.push(nextElement);
                 }
                 nextElement = nextElement.nextElementSibling;
             }
@@ -774,8 +775,8 @@ window.MovesCore = (function() {
             headerElement.classList.add('collapsed');
             triangle.textContent = "▶"; // Right arrow
             headerElement.setAttribute('aria-expanded', 'false');
-            categoryMoves.forEach(move => {
-                move.style.display = 'none';
+            categoryItems.forEach(item => {
+                item.style.display = 'none';
             });
         });
     }
@@ -784,19 +785,19 @@ window.MovesCore = (function() {
      * Expand all moves and categories
      */
     function expandAllMoves() {
-        // Expand all categories first so moves become visible
+        // Expand all categories first so moves and cards become visible
         const allCategories = document.querySelectorAll('.category-header.tree-node');
         allCategories.forEach(headerElement => {
             const triangle = headerElement.querySelector('.tree-triangle');
             if (!triangle) return;
             
-            // Find all moves in this category (next siblings until next header or end)
-            const categoryMoves = [];
+            // Find all items in this category (moves and categorized cards)
+            const categoryItems = [];
             let nextElement = headerElement.nextElementSibling;
             
             while (nextElement && !nextElement.classList.contains('category-header')) {
-                if (nextElement.classList.contains('move')) {
-                    categoryMoves.push(nextElement);
+                if (nextElement.classList.contains('move') || nextElement.classList.contains('categorized-card')) {
+                    categoryItems.push(nextElement);
                 }
                 nextElement = nextElement.nextElementSibling;
             }
@@ -805,8 +806,8 @@ window.MovesCore = (function() {
             headerElement.classList.remove('collapsed');
             triangle.textContent = "▼"; // Down arrow
             headerElement.setAttribute('aria-expanded', 'true');
-            categoryMoves.forEach(move => {
-                move.style.display = '';
+            categoryItems.forEach(item => {
+                item.style.display = '';
             });
         });
         
@@ -836,13 +837,13 @@ window.MovesCore = (function() {
             const triangle = headerElement.querySelector('.tree-triangle');
             if (!triangle) return;
             
-            // Find all moves in this category (next siblings until next header or end)
-            const categoryMoves = [];
+            // Find all items in this category (moves and categorized cards)
+            const categoryItems = [];
             let nextElement = headerElement.nextElementSibling;
             
             while (nextElement && !nextElement.classList.contains('category-header')) {
-                if (nextElement.classList.contains('move')) {
-                    categoryMoves.push(nextElement);
+                if (nextElement.classList.contains('move') || nextElement.classList.contains('categorized-card')) {
+                    categoryItems.push(nextElement);
                 }
                 nextElement = nextElement.nextElementSibling;
             }
@@ -851,8 +852,8 @@ window.MovesCore = (function() {
             headerElement.classList.add('collapsed');
             triangle.textContent = "▶"; // Right arrow
             headerElement.setAttribute('aria-expanded', 'false');
-            categoryMoves.forEach(move => {
-                move.style.display = 'none';
+            categoryItems.forEach(item => {
+                item.style.display = 'none';
             });
         });
     }
@@ -866,13 +867,13 @@ window.MovesCore = (function() {
             const triangle = headerElement.querySelector('.tree-triangle');
             if (!triangle) return;
             
-            // Find all moves in this category (next siblings until next header or end)
-            const categoryMoves = [];
+            // Find all items in this category (moves and categorized cards)
+            const categoryItems = [];
             let nextElement = headerElement.nextElementSibling;
             
             while (nextElement && !nextElement.classList.contains('category-header')) {
-                if (nextElement.classList.contains('move')) {
-                    categoryMoves.push(nextElement);
+                if (nextElement.classList.contains('move') || nextElement.classList.contains('categorized-card')) {
+                    categoryItems.push(nextElement);
                 }
                 nextElement = nextElement.nextElementSibling;
             }
@@ -881,8 +882,8 @@ window.MovesCore = (function() {
             headerElement.classList.remove('collapsed');
             triangle.textContent = "▼"; // Down arrow
             headerElement.setAttribute('aria-expanded', 'true');
-            categoryMoves.forEach(move => {
-                move.style.display = '';
+            categoryItems.forEach(item => {
+                item.style.display = '';
             });
         });
     }
@@ -1112,8 +1113,11 @@ window.MovesCore = (function() {
 
     /**
      * Render all moves for roles with merged availability
+     * @param {Array<string>} roles - Array of roles to render for
+     * @param {Object} mergedAvailability - Merged availability map
+     * @param {Array} [loadedCards] - Optional array of loaded card data to render categorized cards
      */
-    function renderMovesForRole(roles, mergedAvailability) {
+    function renderMovesForRole(roles, mergedAvailability, loadedCards = null) {
         const movesContainer = document.getElementById("moves");
         if (!movesContainer) return;
         
@@ -1132,6 +1136,12 @@ window.MovesCore = (function() {
         // Group moves by category using merged availability
         const categorized = groupMovesByCategory(window.moves, mergedAvailability, hideUntaken, urlParams);
         
+        // Get categorized cards if any were loaded
+        const categorizedCards = (loadedCards && window.Cards) ? 
+            window.Cards.getCategorizedCards(loadedCards) : new Map();
+        
+        console.log('MovesCore: Found', categorizedCards.size, 'categories with cards');
+        
         // Role information header removed - no longer displaying roles
         
         // Sort categories according to configuration
@@ -1140,9 +1150,25 @@ window.MovesCore = (function() {
         // Render categories in sorted order
         sortedCategories.forEach(categoryName => {
             const categoryMoves = categorized.get(categoryName);
-            const categoryHeader = createCategoryHeader(categoryName, categoryMoves.length);
+            const categoryCards = categorizedCards.get(categoryName) || [];
+            
+            // Update category header count to include cards
+            const totalItems = categoryMoves.length + categoryCards.length;
+            const categoryHeader = createCategoryHeader(categoryName, totalItems);
             movesContainer.appendChild(categoryHeader);
             
+            // Render cards first (if any for this category)
+            if (categoryCards.length > 0 && window.Cards) {
+                console.log(`MovesCore: Rendering ${categoryCards.length} categorized cards for category '${categoryName}'`);
+                categoryCards.forEach(cardData => {
+                    const cardElement = window.Cards.renderCategorizedCard(cardData, categoryName);
+                    // Hide cards initially since categories start collapsed
+                    cardElement.style.display = 'none';
+                    movesContainer.appendChild(cardElement);
+                });
+            }
+            
+            // Then render moves
             categoryMoves.forEach(move => {
                 const moveElement = renderMove(move, mergedAvailability, urlParams);
                 // Hide moves initially since categories start collapsed

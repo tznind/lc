@@ -1,0 +1,12 @@
+{
+  "id": "test-equipment",
+  "title": "Equipment Tracker",
+  "path": "data/cards/test-equipment",
+  "description": "Test card for categorized card rendering - tracks equipment",
+  "version": "1.0.0",
+  "author": "System Test",
+  "category": "Equipment",
+  "files": {
+    "html": "card.html"
+  }
+}

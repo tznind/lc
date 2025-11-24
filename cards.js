@@ -167,15 +167,17 @@ window.Cards = (function() {
 
     /**
      * Render cards for roles using merged availability
+     * Only renders non-categorized cards (categorized cards are rendered under category headers)
      * @param {Array<string>} roles - Array of roles to render cards for
      * @param {Object} mergedAvailability - Merged availability map
      * @param {string} containerId - ID of the container to render cards into
+     * @returns {Promise<Array>} Array of card data objects that were loaded (for both categorized and non-categorized)
      */
     async function renderCardsForRole(roles, mergedAvailability, containerId = 'cards-container') {
         const container = document.getElementById(containerId);
         if (!container) {
             console.error(`Cards container not found: ${containerId}`);
-            return;
+            return [];
         }
 
         // Clear existing cards
@@ -186,44 +188,138 @@ window.Cards = (function() {
         if (!cardDefs || cardDefs.length === 0) {
             // Hide container if no cards
             container.style.display = 'none';
-            return;
+            return [];
         }
 
-        // Show container if we have cards
-        container.style.display = 'block';
-
         try {
-            // Load and render each card
+            // Load all cards first to check for categories
+            const loadedCards = [];
             for (const cardDef of cardDefs) {
                 const cardData = await loadCard(cardDef.id);
-                
-                const cardWrapper = document.createElement('div');
-                cardWrapper.className = 'card-wrapper collapsed'; // Start collapsed
-                cardWrapper.setAttribute('data-card-id', cardDef.id);
-                
-                // Create card element with collapse functionality
-                const cardElement = createCollapsibleCard(cardData);
-                cardWrapper.appendChild(cardElement);
-                
-                container.appendChild(cardWrapper);
+                loadedCards.push(cardData);
             }
-
-            // Cards are now rendered and ready for persistence
-            console.log(`Rendered ${cardDefs.length} cards for roles: ${roles.join(', ')}`);
+            
+            // Separate categorized from non-categorized cards
+            const nonCategorizedCards = loadedCards.filter(card => !card.category);
+            
+            // Render only non-categorized cards in the cards container
+            if (nonCategorizedCards.length > 0) {
+                container.style.display = 'block';
+                
+                for (const cardData of nonCategorizedCards) {
+                    const cardWrapper = document.createElement('div');
+                    cardWrapper.className = 'card-wrapper collapsed'; // Start collapsed
+                    cardWrapper.setAttribute('data-card-id', cardData.id);
+                    
+                    // Create card element with collapse functionality
+                    const cardElement = createCollapsibleCard(cardData);
+                    cardWrapper.appendChild(cardElement);
+                    
+                    container.appendChild(cardWrapper);
+                }
+                
+                console.log(`Rendered ${nonCategorizedCards.length} non-categorized cards for roles: ${roles.join(', ')}`);
+            } else {
+                // Hide container if no non-categorized cards
+                container.style.display = 'none';
+            }
             
             // Initialize any cards that have initialization functions
             setTimeout(() => {
-                initializeRenderedCards(cardDefs);
+                initializeRenderedCards(loadedCards);
             }, 100);
             
-            // Note: Persistence refresh is handled by the caller
+            // Return all loaded cards (both categorized and non-categorized)
+            // Categorized cards will be rendered by renderCategorizedCards
+            return loadedCards;
 
         } catch (error) {
             console.error('Error rendering cards:', error);
             container.innerHTML = '<div class="card card-error"><p>Error loading cards</p></div>';
+            return [];
         }
     }
 
+    /**
+     * Create a non-collapsible card element from card data
+     * Used for categorized cards where the category itself provides collapsibility
+     * @param {Object} cardData - Card data with HTML and metadata
+     * @returns {HTMLElement} Card element without collapse functionality
+     */
+    function createNonCollapsibleCard(cardData) {
+        // Parse the card HTML
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(cardData.html, 'text/html');
+        const cardElement = doc.querySelector('.card');
+        
+        if (!cardElement) {
+            // If no .card element found, return the HTML as-is
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = cardData.html;
+            return wrapper.firstChild;
+        }
+        
+        // Find the card title (h3 or .card-title)
+        let titleElement = cardElement.querySelector('h3, .card-title');
+        if (!titleElement) {
+            // If no title found, create one from the card data
+            titleElement = document.createElement('h3');
+            titleElement.className = 'card-title';
+            titleElement.textContent = cardData.title || cardData.id;
+            cardElement.insertBefore(titleElement, cardElement.firstChild);
+        }
+        
+        // Ensure title element has the right classes for styling
+        if (!titleElement.classList.contains('card-title')) {
+            titleElement.classList.add('card-title');
+        }
+        
+        // Add a class to indicate this is a non-collapsible card
+        cardElement.classList.add('non-collapsible');
+        
+        // Return the card element without any collapse functionality
+        return cardElement;
+    }
+    
+    /**
+     * Get categorized cards from loaded card data
+     * @param {Array} loadedCards - Array of loaded card data objects
+     * @returns {Map} Map of category name to array of card data
+     */
+    function getCategorizedCards(loadedCards) {
+        const categorized = new Map();
+        
+        loadedCards.forEach(cardData => {
+            if (cardData.category) {
+                if (!categorized.has(cardData.category)) {
+                    categorized.set(cardData.category, []);
+                }
+                categorized.get(cardData.category).push(cardData);
+            }
+        });
+        
+        return categorized;
+    }
+    
+    /**
+     * Render a categorized card under a category header in the moves container
+     * @param {Object} cardData - Card data with HTML and metadata
+     * @param {string} categoryName - Category name to render under
+     * @returns {HTMLElement} Card element (non-collapsible)
+     */
+    function renderCategorizedCard(cardData, categoryName) {
+        const cardWrapper = document.createElement('div');
+        cardWrapper.className = 'card-wrapper categorized-card'; // Different class for categorized cards
+        cardWrapper.setAttribute('data-card-id', cardData.id);
+        cardWrapper.setAttribute('data-card-category', categoryName);
+        
+        // Create non-collapsible card element
+        const cardElement = createNonCollapsibleCard(cardData);
+        cardWrapper.appendChild(cardElement);
+        
+        return cardWrapper;
+    }
+    
     /**
      * Create a collapsible card element from card data
      * @param {Object} cardData - Card data with HTML and metadata
@@ -461,6 +557,9 @@ window.Cards = (function() {
         loadCard,
         renderCardsForRole,
         getCardsFromMergedAvailability,
+        getCategorizedCards,
+        renderCategorizedCard,
+        createNonCollapsibleCard,
         initialize,
         collapseAllCards,
         expandAllCards,

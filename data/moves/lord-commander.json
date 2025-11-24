@@ -184,7 +184,7 @@
   {
     "id": "battlehard",
     "title": "Battle-Hardened",
-    "description": "Each time you take this move (up to 3 times), click **max...** and increase your Valor maximum by 2. Spend Valor to reroll any die.",
+    "description": "Each time you take this move (up to 3 times), click **max...** and increase your Valor maximum by 2. Spend Valor to reroll any die roll.",
     "multiple": 3,
     "tracks": [
       {
@@ -200,5 +200,21 @@
         "text": "Your experience grants you resolve. Spend Valor to reroll any die roll."
       }
     ]
+  },
+  {
+    "id": "elite_training",
+    "title": "Elite Training - Learn specific signature moves",
+    "description": "Through intense study, learn one of the three signature Lord Commander moves",
+    "takeFrom": ["Lord Commander"],
+    "takeMove": ["l1a2b3", "l4c5d6", "l7e8f9"]
+  },
+  {
+    "id": "tactical_mastery",
+    "title": "Tactical Mastery - Learn advanced techniques",
+    "description": "Study the methods of other commanders and learn their tactical moves",
+    "multiple": 2,
+    "takeFrom": ["*"],
+    "takeCategory": ["Moves"],
+    "takeMove": ["l1a2b3", "l4c5d6", "lc001", "inspire1"]
   }
 ]

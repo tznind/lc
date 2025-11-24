@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://roguetrader.local/schemas/card.schema.json",
+  "title": "Card Definition",
+  "description": "Schema for card definitions in data/cards/[cardname]/card.json",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the card (must match the folder name)",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "title": {
+      "type": "string",
+      "description": "Display title of the card"
+    },
+    "path": {
+      "type": "string",
+      "description": "Path to the card folder",
+      "pattern": "^data/cards/"
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description of what the card is for"
+    },
+    "version": {
+      "type": "string",
+      "description": "Version number for the card",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "author": {
+      "type": "string",
+      "description": "Author or creator of the card"
+    },
+    "files": {
+      "type": "object",
+      "description": "Files associated with this card",
+      "properties": {
+        "html": {
+          "type": "string",
+          "description": "HTML template filename"
+        },
+        "css": {
+          "type": "string",
+          "description": "Optional CSS stylesheet filename"
+        },
+        "js": {
+          "type": "string",
+          "description": "Optional JavaScript filename"
+        }
+      },
+      "required": ["html"],
+      "additionalProperties": false
+    },
+    "category": {
+      "type": "string",
+      "description": "Optional category name. If specified, the card will be rendered under this category section instead of at the top under 'Character'. Cards with categories are not collapsible individually since the category itself is collapsible.",
+      "examples": ["Equipment", "Advancement", "Character Details", "Companions"]
+    }
+  },
+  "required": ["id", "title", "path", "files"],
+  "additionalProperties": false
+}
