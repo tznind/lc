@@ -393,11 +393,125 @@ window.DynamicTable = (function() {
         initializeTables(container, suffix);
     }
 
+    /**
+     * Get TableManager instance for a table ID
+     * @param {string} tableId - Full table ID (with suffix if applicable)
+     * @returns {TableManager|null} TableManager instance or null
+     */
+    function getTableManager(tableId) {
+        return initializedTables.get(tableId) || null;
+    }
+
+    /**
+     * Add a row to a dynamic table with optional values
+     * @param {string} tableId - Full table ID (with suffix if applicable)
+     * @param {Object} values - Object with field values {fieldName: value}
+     */
+    function addRow(tableId, values = {}) {
+        const manager = getTableManager(tableId);
+        if (!manager) {
+            console.warn(`DynamicTable.addRow: Table not found: ${tableId}`);
+            return;
+        }
+
+        manager.addRow();
+
+        // Populate values if provided
+        if (Object.keys(values).length > 0) {
+            const rowIndex = manager.rowCount - 1;
+            manager.fields.forEach(field => {
+                if (values.hasOwnProperty(field.name)) {
+                    const input = document.getElementById(manager.getCellId(rowIndex, field.name));
+                    if (input) {
+                        if (input.type === 'checkbox') {
+                            input.checked = !!values[field.name];
+                        } else {
+                            input.value = values[field.name];
+                        }
+                    }
+                }
+            });
+            manager.saveToURL();
+        }
+    }
+
+    /**
+     * Clear all rows from a dynamic table
+     * @param {string} tableId - Full table ID (with suffix if applicable)
+     */
+    function clearTable(tableId) {
+        const manager = getTableManager(tableId);
+        if (!manager) {
+            console.warn(`DynamicTable.clearTable: Table not found: ${tableId}`);
+            return;
+        }
+
+        manager.tbody.innerHTML = '';
+        manager.rowCount = 0;
+        manager.saveToURL();
+    }
+
+    /**
+     * Get all data from a dynamic table
+     * @param {string} tableId - Full table ID (with suffix if applicable)
+     * @returns {Array} Array of row objects {fieldName: value}
+     */
+    function getTableData(tableId) {
+        const manager = getTableManager(tableId);
+        if (!manager) {
+            console.warn(`DynamicTable.getTableData: Table not found: ${tableId}`);
+            return [];
+        }
+
+        const data = [];
+        for (let i = 0; i < manager.rowCount; i++) {
+            const rowData = {};
+            manager.fields.forEach(field => {
+                const input = document.getElementById(manager.getCellId(i, field.name));
+                if (input) {
+                    if (input.type === 'checkbox') {
+                        rowData[field.name] = input.checked;
+                    } else {
+                        rowData[field.name] = input.value || '';
+                    }
+                }
+            });
+            data.push(rowData);
+        }
+        return data;
+    }
+
+    /**
+     * Set table data from an array of objects
+     * @param {string} tableId - Full table ID (with suffix if applicable)
+     * @param {Array} data - Array of row objects {fieldName: value}
+     */
+    function setTableData(tableId, data) {
+        const manager = getTableManager(tableId);
+        if (!manager) {
+            console.warn(`DynamicTable.setTableData: Table not found: ${tableId}`);
+            return;
+        }
+
+        // Clear existing rows
+        manager.tbody.innerHTML = '';
+        manager.rowCount = 0;
+
+        // Add new rows
+        data.forEach(rowData => {
+            addRow(tableId, rowData);
+        });
+    }
+
     // Public API
     return {
         initializeTables,
         initializeInContainer,
-        TableManager
+        TableManager,
+        addRow,
+        clearTable,
+        getTableData,
+        setTableData
     };
 })();
 

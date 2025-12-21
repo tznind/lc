@@ -1064,9 +1064,22 @@ Edit `data/availability.json` and add a `cards` array to any role:
 **JavaScript** (`card.js`):
 ```javascript
 window.CardInitializers.mycard = function(container, suffix) {
+  const helpers = window.CardHelpers.createScopedHelpers(container, suffix);
+
+  // Initialize dynamic tables
   if (window.DynamicTable) {
     window.DynamicTable.initializeInContainer(container, suffix);
   }
+
+  // Example: Add helper functions for users
+  helpers.addEventListener('quick_add_btn', 'click', () => {
+    helpers.addTableRow('members', {
+      name: 'New Member',
+      role: 'Soldier',
+      hp: 10,
+      status: 'Ready'
+    });
+  });
 };
 ```
 
@@ -1080,13 +1093,45 @@ window.CardInitializers.mycard = function(container, suffix) {
 - `data-readonly` - Makes column read-only (for calculated fields)
 - `data-table-add="table_id"` - Links button to table for adding rows
 
+#### Helper Methods
+
+The scoped helpers object provides methods for programmatic table manipulation:
+
+```javascript
+const helpers = window.CardHelpers.createScopedHelpers(container, suffix);
+
+// Add a row with values
+helpers.addTableRow('members', {
+  name: 'John Doe',
+  role: 'Medic',
+  hp: 12,
+  status: 'Ready'
+});
+
+// Clear all rows
+helpers.clearTable('members');
+
+// Get all table data
+const data = helpers.getTableData('members');
+// Returns: [{name: 'John', role: 'Medic', hp: 12, status: 'Ready'}, ...]
+
+// Set table data (replaces all rows)
+helpers.setTableData('members', [
+  {name: 'Alice', role: 'Scout', hp: 10, status: 'Ready'},
+  {name: 'Bob', role: 'Heavy', hp: 15, status: 'Injured'}
+]);
+```
+
+All helpers automatically handle suffix for duplicate cards - just use the base table ID.
+
 #### Features
 
 - Automatic add/delete row buttons
 - URL persistence (each cell auto-saved)
 - Re-indexing when deleting from middle
-- Works with duplicate cards (`takeFromAllowsDuplicates`)
+- Works with duplicate cards (both `takeFromAllowsDuplicates` and `grantsCardAllowsDuplicates`)
 - Multiple tables per card supported
+- Programmatic manipulation via helper methods
 
 ### Everyone System - Universal Cards and Moves
 
