@@ -25,6 +25,11 @@ window.InlineCards = (function() {
             return `for="${forId}_${suffix}"`;
         });
 
+        // Replace data-table-add="xxx" with data-table-add="xxx_suffix" (for dynamic tables)
+        html = html.replace(/\bdata-table-add="([^"]+)"/g, (match, tableId) => {
+            return `data-table-add="${tableId}_${suffix}"`;
+        });
+
         // Also handle id='xxx' and for='xxx' (single quotes)
         html = html.replace(/\bid='([^']+)'/g, (match, id) => {
             return `id='${id}_${suffix}'`;
@@ -32,6 +37,11 @@ window.InlineCards = (function() {
 
         html = html.replace(/\bfor='([^']+)'/g, (match, forId) => {
             return `for='${forId}_${suffix}'`;
+        });
+
+        // Also handle data-table-add='xxx' (single quotes)
+        html = html.replace(/\bdata-table-add='([^']+)'/g, (match, tableId) => {
+            return `data-table-add='${tableId}_${suffix}'`;
         });
 
         return html;

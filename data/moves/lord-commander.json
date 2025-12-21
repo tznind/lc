@@ -136,6 +136,21 @@
     "takeCategory": ["Moves"]
   },
   {
+    "id": "squads",
+    "title": "Command Squads",
+    "description": "You command elite squads of specialized troops. Each squad can be customized with unique members and capabilities. Detail your squads below.",
+    "multiple": 2,
+    "grantsCard": "squad",
+    "grantsCardAllowsDuplicates": true,
+    "category": "Command Moves",
+    "outcomes": [
+      {
+        "range": "",
+        "text": "Your squads are loyal and effective. Track their members, status, and capabilities in the squad card below."
+      }
+    ]
+  },
+  {
     "id": "dribbles",
     "title": "Acquire Dribbles",
     "description": "You have encountered and befriended small fast-breeding alien creatures called Dribbles. Each one is unique and makes soft cooo noises. You may acquire up to 10 Dribbles.",

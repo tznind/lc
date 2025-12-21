@@ -37,7 +37,8 @@
     "is": false,
     "inspire1": false,
     "battlehard": false,
-    "cmdstruct": false
+    "cmdstruct": false,
+    "squads":true
   },
   "Dribbles": {
     "_movesFile": "data/moves/dribbles.json",

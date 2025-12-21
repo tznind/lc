@@ -1,0 +1,13 @@
+{
+  "id": "squad",
+  "title": "Squad",
+  "path": "data/cards/squad",
+  "description": "Track your squad and its members",
+  "version": "1.0.0",
+  "author": "LC System",
+  "files": {
+    "html": "card.html",
+    "css": "card.css",
+    "js": "card.js"
+  }
+}

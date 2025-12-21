@@ -1,0 +1,28 @@
+<!-- Squad Card with Dynamic Table -->
+<div class="card squad-card">
+  <h3 class="card-title">🎖️ Squad</h3>
+
+  <!-- Squad Name -->
+  <div class="form-field">
+    <label for="sq_name">Squad Name:</label>
+    <input type="text" id="sq_name" placeholder="e.g., Alpha Team, The Vanguard">
+  </div>
+
+  <!-- Dynamic Table for Squad Members -->
+  <div class="form-field">
+    <strong>Squad Members:</strong>
+    <table id="sq_members" data-dynamic-table data-table-max="10">
+      <thead>
+        <tr>
+          <th data-field="name">Name</th>
+          <th data-field="role">Role</th>
+          <th data-field="hp" data-type="number">HP</th>
+          <th data-field="status" data-options="Ready,Injured,Recovering">Status</th>
+          <th></th> <!-- Delete column -->
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button type="button" data-table-add="sq_members" class="add-row-btn">+ Add Member</button>
+  </div>
+</div>

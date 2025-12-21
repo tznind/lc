@@ -1,0 +1,64 @@
+/* Squad Card Styling */
+.squad-card {
+  border-left: 4px solid #7c3aed;
+  background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
+}
+
+.squad-card .card-title {
+  color: #7c3aed;
+}
+
+.squad-card table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+.squad-card thead {
+  background-color: #f3f4f6;
+}
+
+.squad-card th {
+  padding: 0.5rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #7c3aed;
+}
+
+.squad-card td {
+  padding: 0.25rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.squad-card input,
+.squad-card select {
+  width: 100%;
+  padding: 0.25rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+
+.squad-card input[type="number"] {
+  width: 60px;
+}
+
+.squad-card .add-row-btn {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.squad-card .add-row-btn:hover {
+  background-color: #6d28d9;
+}
+
+.squad-card .dt-delete-row:hover {
+  color: #991b1b;
+  background-color: #fee2e2;
+  border-radius: 4px;
+}
