@@ -48,15 +48,20 @@ window.InlineCards = (function() {
     }
 
     /**
-     * Extract suffix from a learned move container ID
-     * @param {string} containerId - Container ID (e.g., "learned_granted_card_ac001_2")
+     * Extract suffix from a container ID
+     * @param {string} containerId - Container ID (e.g., "learned_granted_card_ac001_2" or "granted_card_squads_1")
      * @returns {string|null} Suffix if found (e.g., "2"), null otherwise
      */
     function extractSuffixFromContainerId(containerId) {
-        // Pattern: learned_granted_card_{moveId}_{suffix}
-        // We want to extract the suffix at the end
-        const match = containerId.match(/^learned_granted_card_[^_]+_(\d+)$/);
-        return match ? match[1] : null;
+        // Pattern 1: learned_granted_card_{moveId}_{suffix} (from takeFrom with duplicates)
+        let match = containerId.match(/^learned_granted_card_[^_]+_(\d+)$/);
+        if (match) return match[1];
+
+        // Pattern 2: granted_card_{moveId}_{suffix} (from grantsCard with duplicates)
+        match = containerId.match(/^granted_card_[^_]+_(\d+)$/);
+        if (match) return match[1];
+
+        return null;
     }
 
     /**
