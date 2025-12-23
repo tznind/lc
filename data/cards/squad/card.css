@@ -8,6 +8,53 @@
   color: #7c3aed;
 }
 
+/* Squad header with checkbox */
+.squad-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.squad-card .squad-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.squad-card .squad-active-checkbox {
+  width: auto;
+  cursor: pointer;
+}
+
+/* Specialty radio buttons */
+.squad-card .specialty-options {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.squad-card .specialty-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.squad-card .specialty-option input[type="radio"] {
+  width: auto;
+  cursor: pointer;
+}
+
+.squad-card .specialty-option label {
+  cursor: pointer;
+  margin: 0;
+}
+
+/* Loyalty track styling */
+.squad-card #sq_loyalty_track {
+  margin-top: 0.5rem;
+}
+
 .squad-card table {
   width: 100%;
   border-collapse: collapse;

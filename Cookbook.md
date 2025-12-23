@@ -1067,8 +1067,9 @@ window.CardInitializers.mycard = function(container, suffix) {
   const helpers = window.CardHelpers.createScopedHelpers(container, suffix);
 
   // Initialize dynamic tables
+  // IMPORTANT: Don't pass suffix - the table ID is already auto-suffixed in the HTML
   if (window.DynamicTable) {
-    window.DynamicTable.initializeInContainer(container, suffix);
+    window.DynamicTable.initializeInContainer(container);
   }
 
   // Example: Add helper functions for users
@@ -1250,6 +1251,32 @@ helpers.addTrack('inventory-container', [
   }
 ]);
 ```
+
+#### Automatic Suffixing for Duplicate Cards
+
+When cards are used with `grantsCardAllowsDuplicates` or `takeFromAllowsDuplicates`, all form control attributes are **automatically suffixed** - no manual code required!
+
+**Automatically suffixed attributes:**
+- `id` - Element IDs (e.g., `sq_name` → `sq_name_1`)
+- `for` - Label associations (e.g., `for="sq_name"` → `for="sq_name_1"`)
+- `name` - Form control grouping (e.g., `name="sq_specialty"` → `name="sq_specialty_1"`)
+- `data-table-add` - Dynamic table buttons
+
+**Example - Radio buttons just work:**
+
+```html
+<!-- In your card HTML -->
+<input type="radio" id="sq_spec_engineering" name="sq_specialty" value="engineering">
+<input type="radio" id="sq_spec_fighting" name="sq_specialty" value="fighting">
+<input type="radio" id="sq_spec_medical" name="sq_specialty" value="medical">
+```
+
+**Result for duplicate instances:**
+- Card 1: `name="sq_specialty_1"` (all three radio buttons share this name)
+- Card 2: `name="sq_specialty_2"` (independent from Card 1)
+- Each card instance has its own radio button group
+
+**No JavaScript required** - the suffixing happens automatically during card rendering!
 
 ### Everyone System - Universal Cards and Moves
 

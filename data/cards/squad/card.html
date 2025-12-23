@@ -1,28 +1,62 @@
 <!-- Squad Card with Dynamic Table -->
 <div class="card squad-card">
-  <h3 class="card-title">🎖️ Squad</h3>
-
-  <!-- Squad Name -->
-  <div class="form-field">
-    <label for="sq_name">Squad Name:</label>
-    <input type="text" id="sq_name" placeholder="e.g., Alpha Team, The Vanguard">
+  <div class="card-header">
+    <h3 class="card-title">🎖️ Squad</h3>
+    <div class="squad-selector">
+      <input type="checkbox" id="sq_active" class="squad-active-checkbox">
+      <label for="sq_active">Activate Squad</label>
+    </div>
   </div>
 
-  <!-- Dynamic Table for Squad Members -->
-  <div class="form-field">
-    <strong>Squad Members:</strong>
-    <table id="sq_members" data-dynamic-table data-table-max="10">
-      <thead>
-        <tr>
-          <th data-field="name">Name</th>
-          <th data-field="role">Role</th>
-          <th data-field="hp" data-type="number">HP</th>
-          <th data-field="status" data-options="Ready,Injured,Recovering">Status</th>
-          <th></th> <!-- Delete column -->
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <button type="button" data-table-add="sq_members" class="add-row-btn">+ Add Member</button>
+  <!-- Squad details - hidden when squad not active and "hide untaken moves" is enabled -->
+  <div class="squad-details" data-hide-when-untaken="sq_active">
+    <!-- Squad Name -->
+    <div class="form-field">
+      <label for="sq_name">Squad Name:</label>
+      <input type="text" id="sq_name" placeholder="e.g., Alpha Team, The Vanguard">
+    </div>
+
+    <!-- Loyalty Track -->
+    <div class="form-field">
+      <label>Squad Loyalty:</label>
+      <div id="sq_loyalty_track"></div>
+    </div>
+
+    <!-- Specialty Selection -->
+    <div class="form-field">
+      <label>Pick a Specialty:</label>
+      <div class="specialty-options">
+        <div class="specialty-option">
+          <input type="radio" id="sq_spec_engineering" name="sq_specialty" value="engineering">
+          <label for="sq_spec_engineering">Engineering</label>
+        </div>
+        <div class="specialty-option">
+          <input type="radio" id="sq_spec_fighting" name="sq_specialty" value="fighting">
+          <label for="sq_spec_fighting">Fighting</label>
+        </div>
+        <div class="specialty-option">
+          <input type="radio" id="sq_spec_medical" name="sq_specialty" value="medical">
+          <label for="sq_spec_medical">Medical</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dynamic Table for Squad Members -->
+    <div class="form-field">
+      <strong>Squad Members:</strong>
+      <table id="sq_members" data-dynamic-table data-table-max="10">
+        <thead>
+          <tr>
+            <th data-field="name">Name</th>
+            <th data-field="role">Role</th>
+            <th data-field="hp" data-type="number">HP</th>
+            <th data-field="status" data-options="Ready,Injured,Recovering">Status</th>
+            <th></th> <!-- Delete column -->
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button type="button" data-table-add="sq_members" class="add-row-btn">+ Add Member</button>
+    </div>
   </div>
 </div>

@@ -291,15 +291,7 @@ window.CardHelpers = (function() {
 
                 if (trackDisplay) {
                     containerElement.appendChild(trackDisplay);
-
-                    // Initialize the track display
-                    if (window.Track.initializeTrackCounters) {
-                        // Add to window.moves temporarily so initializeTrackCounters can find it
-                        const originalMoves = window.moves;
-                        window.moves = originalMoves ? [...originalMoves, pseudoMove] : [pseudoMove];
-                        window.Track.initializeTrackCounters();
-                        window.moves = originalMoves;
-                    }
+                    // Track display is fully initialized with event handlers - no need to call initializeTrackCounters
                 }
 
                 return trackDisplay;
