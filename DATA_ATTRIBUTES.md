@@ -28,7 +28,7 @@ This document lists all `data-*` attributes used in the Rogue Trader character s
 | `data-table-add` | References table ID for "add row" button | **Yes** | Links button to table |
 | `data-table-clear` | References table ID for "clear all" button | **Yes** | Links button to table |
 | **Cards: Visibility** |
-| `data-hide-when-untaken` | References field ID - hides element when field is empty/unchecked | **Yes** | Conditional visibility |
+| `data-hide-if-untaken` | Marks element to be hidden when it's untaken and "Hide untaken moves" is enabled | No | Conditional visibility |
 | **UI: Help System** |
 | `data-help-title` | Title for help tooltip | No | Help icon tooltips |
 | `data-help-text` | Description text for help tooltip | No | Help icon tooltips |
@@ -42,7 +42,7 @@ When cards are used as inline cards (granted by moves) and can have multiple ins
 
 **Attributes that get suffixed:**
 - Standard HTML: `id`, `name`, `for`
-- Data attributes that reference IDs: `data-table-add`, `data-table-clear`, `data-hide-when-untaken`
+- Data attributes that reference IDs: `data-table-add`, `data-table-clear`
 
 **Why these get suffixed:**
 These attributes contain references to other elements by ID. When a card is duplicated, these IDs must be unique, so both the target ID and the reference must be suffixed with the same value.
@@ -50,12 +50,12 @@ These attributes contain references to other elements by ID. When a card is dupl
 **Example:**
 ```html
 <!-- Original card HTML -->
-<input type="checkbox" id="sq_active" name="sq_active">
-<div data-hide-when-untaken="sq_active">...</div>
+<table id="sq_members" data-dynamic-table>...</table>
+<button data-table-add="sq_members">Add Row</button>
 
 <!-- After suffixing with "_2" -->
-<input type="checkbox" id="sq_active_2" name="sq_active_2">
-<div data-hide-when-untaken="sq_active_2">...</div>
+<table id="sq_members_2" data-dynamic-table>...</table>
+<button data-table-add="sq_members_2">Add Row</button>
 ```
 
 ## Adding New Data Attributes

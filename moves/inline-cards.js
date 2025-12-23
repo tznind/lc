@@ -16,8 +16,7 @@ window.InlineCards = (function() {
         'for',                      // Label for attributes
         'name',                     // Form control names (especially radio buttons)
         'data-table-add',           // Dynamic table add buttons
-        'data-table-clear',         // Dynamic table clear buttons
-        'data-hide-when-untaken'    // Hide-when-untaken references
+        'data-table-clear'          // Dynamic table clear buttons
     ];
 
     /**

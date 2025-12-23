@@ -2,14 +2,9 @@
 <div class="card squad-card">
   <div class="card-header">
     <h3 class="card-title">🎖️ Squad</h3>
-    <div class="squad-selector">
-      <input type="checkbox" id="sq_active" class="squad-active-checkbox">
-      <label for="sq_active">Activate Squad</label>
-    </div>
   </div>
 
-  <!-- Squad details - hidden when squad not active and "hide untaken moves" is enabled -->
-  <div class="squad-details" data-hide-when-untaken="sq_active">
+  <div class="squad-details">
     <!-- Squad Name -->
     <div class="form-field">
       <label for="sq_name">Squad Name:</label>
@@ -30,15 +25,15 @@
     <div class="form-field">
       <label>Pick a Specialty:</label>
       <div class="specialty-options">
-        <div class="specialty-option">
+        <div class="specialty-option" data-hide-if-untaken>
           <input type="radio" id="sq_spec_engineering" name="sq_specialty" value="engineering">
           <label for="sq_spec_engineering">Engineering</label>
         </div>
-        <div class="specialty-option">
+        <div class="specialty-option" data-hide-if-untaken>
           <input type="radio" id="sq_spec_fighting" name="sq_specialty" value="fighting">
           <label for="sq_spec_fighting">Fighting</label>
         </div>
-        <div class="specialty-option">
+        <div class="specialty-option"  data-hide-if-untaken>
           <input type="radio" id="sq_spec_medical" name="sq_specialty" value="medical">
           <label for="sq_spec_medical">Medical</label>
         </div>

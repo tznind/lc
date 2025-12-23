@@ -475,8 +475,10 @@ window.CardHelpers = (function() {
     /**
      * Check if a field is "taken" (has a meaningful value)
      * Works flexibly for all input types
+     * @param {HTMLElement} field - The field to check
+     * @param {boolean} checkIndividualRadio - For radios, check if THIS radio is selected (not just if group has selection)
      */
-    function isFieldTaken(field) {
+    function isFieldTaken(field, checkIndividualRadio = false) {
         if (!field) return false;
 
         const type = field.type?.toLowerCase();
@@ -486,7 +488,11 @@ window.CardHelpers = (function() {
                 return field.checked;
 
             case 'radio':
-                // For radio buttons, check if ANY radio with the same name is checked
+                // For hide-if-untaken on individual radios, check THIS radio specifically
+                // Otherwise, check if ANY radio in the group is checked (for group validation)
+                if (checkIndividualRadio) {
+                    return field.checked;
+                }
                 if (field.name) {
                     const radioGroup = document.querySelectorAll(`input[type="radio"][name="${field.name}"]`);
                     return Array.from(radioGroup).some(radio => radio.checked);
@@ -530,39 +536,54 @@ window.CardHelpers = (function() {
     }
 
     /**
-     * Initialize hide-when-untaken functionality
-     * Automatically hides/shows elements based on data-hide-when-untaken attribute
+     * Initialize hide-if-untaken functionality
+     * Automatically hides/shows elements based on data-hide-if-untaken attribute
      *
      * Works with any input type: checkbox, radio, text, select, etc.
      *
      * Usage in card HTML:
-     * <div data-hide-when-untaken="field_id">
-     *   This element will be hidden when field_id is empty/unchecked and "hide untaken moves" is enabled
-     * </div>
+     * <input type="checkbox" id="option1" data-hide-if-untaken>
+     * <label for="option1" data-hide-if-untaken>Option 1</label>
+     *
+     * When "Hide untaken moves" is checked, any element with data-hide-if-untaken
+     * will be hidden if it's untaken (unchecked/empty).
      */
     function initializeHideWhenUntaken() {
         // Find the global hide_untaken checkbox
         const hideUntakenCheckbox = document.getElementById('hide_untaken');
         if (!hideUntakenCheckbox) return;
 
-        // Function to update visibility of all elements with data-hide-when-untaken
+        // Function to update visibility of all elements with data-hide-if-untaken
         function updateHideWhenUntaken() {
             const hideUntaken = hideUntakenCheckbox.checked;
-            const elementsToToggle = document.querySelectorAll('[data-hide-when-untaken]');
+            const elementsToToggle = document.querySelectorAll('[data-hide-if-untaken]');
 
             elementsToToggle.forEach(element => {
-                const fieldId = element.getAttribute('data-hide-when-untaken');
-                const field = document.getElementById(fieldId);
+                let isTaken = false;
 
-                if (field) {
-                    // Hide if: hide_untaken is checked AND the referenced field is not taken
-                    if (hideUntaken && !isFieldTaken(field)) {
-                        element.style.display = 'none';
-                    } else {
-                        element.style.display = '';
+                // If this is a label, check its associated input instead
+                if (element.tagName === 'LABEL' && element.hasAttribute('for')) {
+                    const inputId = element.getAttribute('for');
+                    const input = document.getElementById(inputId);
+                    if (input) {
+                        isTaken = isFieldTaken(input, true);
                     }
+                }
+                // If this is an input/select/textarea, check it directly
+                else if (element.tagName === 'INPUT' || element.tagName === 'SELECT' || element.tagName === 'TEXTAREA') {
+                    isTaken = isFieldTaken(element, true);
+                }
+                // If this is a wrapper element (div, span, etc.), check if ANY input inside is taken
+                else {
+                    const inputs = element.querySelectorAll('input, select, textarea');
+                    isTaken = Array.from(inputs).some(input => isFieldTaken(input, true));
+                }
+
+                // Hide if: hide_untaken is checked AND this element is not taken
+                if (hideUntaken && !isTaken) {
+                    element.style.display = 'none';
                 } else {
-                    console.warn(`Hide-when-untaken: Field not found: ${fieldId}`);
+                    element.style.display = '';
                 }
             });
         }
@@ -572,26 +593,17 @@ window.CardHelpers = (function() {
             // Listen for changes to hide_untaken checkbox
             hideUntakenCheckbox.addEventListener('change', updateHideWhenUntaken);
 
-            // Listen for changes to any input/select/textarea that might be referenced
+            // Listen for changes to any element with data-hide-if-untaken
             document.addEventListener('change', (event) => {
-                const target = event.target;
-                if (target.id) {
-                    // Check if any element references this field
-                    const referencingElements = document.querySelectorAll(`[data-hide-when-untaken="${target.id}"]`);
-                    if (referencingElements.length > 0) {
-                        updateHideWhenUntaken();
-                    }
+                if (event.target.hasAttribute('data-hide-if-untaken')) {
+                    updateHideWhenUntaken();
                 }
             });
 
             // Also listen for input events (for text fields that update as you type)
             document.addEventListener('input', (event) => {
-                const target = event.target;
-                if (target.id) {
-                    const referencingElements = document.querySelectorAll(`[data-hide-when-untaken="${target.id}"]`);
-                    if (referencingElements.length > 0) {
-                        updateHideWhenUntaken();
-                    }
+                if (event.target.hasAttribute('data-hide-if-untaken')) {
+                    updateHideWhenUntaken();
                 }
             });
 

@@ -1167,32 +1167,53 @@ All helpers automatically handle suffix for duplicate cards - just use the base 
 
 The CardHelpers module provides utilities to make card development easier and reduce boilerplate code.
 
-#### Hide When Untaken
+#### Hide Untaken Options
 
-Automatically hide card elements when their associated field is "untaken" (empty/unchecked) and "Hide untaken moves" is enabled.
+Automatically hide optional fields/elements when they're "untaken" (empty/unchecked) and "Hide untaken moves" is enabled.
 
 **Works with any input type:** checkbox, radio, text, select, number, date, etc.
 
 **Usage:**
 
-Add `data-hide-when-untaken="field-id"` to any element you want to hide:
+Add `data-hide-if-untaken` to any optional element you want to hide when untaken:
 
+**Checkboxes:**
 ```html
 <div class="card initiates-card">
   <h3 class="card-title">Initiates of Danu</h3>
 
-  <!-- This row will auto-hide when enfys_selected is unchecked -->
-  <div class="initiate-row" data-hide-when-untaken="enfys_selected">
-    <input type="checkbox" id="enfys_selected">
-    <h4>Enfys, the acolyte</h4>
-    <!-- Rest of initiate content -->
+  <!-- These elements will auto-hide when unchecked and "Hide untaken moves" is enabled -->
+  <div class="initiate-row">
+    <input type="checkbox" id="enfys_selected" data-hide-if-untaken>
+    <label for="enfys_selected" data-hide-if-untaken>
+      <h4>Enfys, the acolyte</h4>
+      <!-- Rest of initiate content -->
+    </label>
   </div>
 
-  <!-- This row will auto-hide when afon_selected is unchecked -->
-  <div class="initiate-row" data-hide-when-untaken="afon_selected">
-    <input type="checkbox" id="afon_selected">
-    <h4>Afon, a fellow initiate</h4>
-    <!-- Rest of initiate content -->
+  <div class="initiate-row">
+    <input type="checkbox" id="afon_selected" data-hide-if-untaken>
+    <label for="afon_selected" data-hide-if-untaken>
+      <h4>Afon, a fellow initiate</h4>
+      <!-- Rest of initiate content -->
+    </label>
+  </div>
+</div>
+```
+
+**Radio buttons (hide unpicked options):**
+```html
+<div class="form-field">
+  <label>Pick a Specialty:</label>
+  <div class="specialty-options">
+    <input type="radio" id="engineering" name="specialty" value="engineering" data-hide-if-untaken>
+    <label for="engineering" data-hide-if-untaken>Engineering</label>
+
+    <input type="radio" id="fighting" name="specialty" value="fighting" data-hide-if-untaken>
+    <label for="fighting" data-hide-if-untaken>Fighting</label>
+
+    <input type="radio" id="medical" name="specialty" value="medical" data-hide-if-untaken>
+    <label for="medical" data-hide-if-untaken>Medical</label>
   </div>
 </div>
 ```
@@ -1200,10 +1221,10 @@ Add `data-hide-when-untaken="field-id"` to any element you want to hide:
 **How it works:**
 - No JavaScript required in your card
 - Elements are automatically hidden when:
-  1. The referenced field is "untaken" (unchecked for checkboxes, empty for text/select/etc.), AND
+  1. The element itself is "untaken" (unchecked for checkboxes, empty for text/select/etc.), AND
   2. The global "Hide untaken moves" checkbox is enabled
 - Elements automatically show when either condition changes
-- Works with any element type (divs, sections, rows, etc.)
+- Works with any element type (inputs, labels, divs, sections, rows, etc.)
 - Supports all input types:
   - **Checkbox/Radio**: Hidden when unchecked
   - **Text/Textarea**: Hidden when empty
