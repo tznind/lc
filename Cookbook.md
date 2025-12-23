@@ -1133,6 +1133,124 @@ All helpers automatically handle suffix for duplicate cards - just use the base 
 - Multiple tables per card supported
 - Programmatic manipulation via helper methods
 
+### Card Helper Functions
+
+The CardHelpers module provides utilities to make card development easier and reduce boilerplate code.
+
+#### Hide When Untaken
+
+Automatically hide card elements when their associated checkbox is unchecked and "Hide untaken moves" is enabled.
+
+**Usage:**
+
+Add `data-hide-when-untaken="checkbox-id"` to any element you want to hide:
+
+```html
+<div class="card initiates-card">
+  <h3 class="card-title">Initiates of Danu</h3>
+
+  <!-- This row will auto-hide when enfys_selected is unchecked -->
+  <div class="initiate-row" data-hide-when-untaken="enfys_selected">
+    <input type="checkbox" id="enfys_selected">
+    <h4>Enfys, the acolyte</h4>
+    <!-- Rest of initiate content -->
+  </div>
+
+  <!-- This row will auto-hide when afon_selected is unchecked -->
+  <div class="initiate-row" data-hide-when-untaken="afon_selected">
+    <input type="checkbox" id="afon_selected">
+    <h4>Afon, a fellow initiate</h4>
+    <!-- Rest of initiate content -->
+  </div>
+</div>
+```
+
+**How it works:**
+- No JavaScript required in your card
+- Elements are automatically hidden when:
+  1. The referenced checkbox is unchecked, AND
+  2. The global "Hide untaken moves" checkbox is enabled
+- Elements automatically show when either condition changes
+- Works with any element type (divs, sections, rows, etc.)
+
+#### Add Track Counters
+
+Easily add track counters to cards using the same JSON format as moves and stats.
+
+**Usage:**
+
+```javascript
+window.CardInitializers.mycard = function(container, suffix) {
+  const helpers = window.CardHelpers.createScopedHelpers(container, suffix);
+
+  // Add track counters to a container element
+  helpers.addTrack('loyalty-container', [
+    {
+      name: 'Loyalty',
+      max: 3,
+      shape: 'circle'
+    }
+  ]);
+
+  // Add multiple tracks
+  helpers.addTrack('resources-container', [
+    {
+      name: 'Wounds',
+      max: 6,
+      shape: 'square'
+    },
+    {
+      name: 'Armor',
+      max: 3,
+      shape: 'hexagon'
+    }
+  ]);
+};
+```
+
+**HTML:**
+
+```html
+<div class="card mycard-card">
+  <h3>My Card</h3>
+
+  <!-- Container where track will be added -->
+  <div id="loyalty-container"></div>
+
+  <div id="resources-container"></div>
+</div>
+```
+
+**Track Configuration:**
+
+Track configs use the same format as move/stat tracks:
+
+- `name` (required): Display name for the track
+- `max` (optional, default 5): Maximum number of points
+- `shape` (optional, default 'square'): Shape of track points
+  - Options: `'square'`, `'circle'`, `'triangle'`, `'hexagon'`
+- `dynamic` (optional, default false): Add a "max..." button to adjust maximum
+
+**Features:**
+- Automatic click handling and persistence
+- Works with duplicate cards (automatically handles suffixes)
+- Visual feedback (filled/unfilled shapes)
+- Keyboard accessible (Tab to focus, Space/Enter to click)
+- All values persist to URL automatically
+
+**Example with dynamic max:**
+
+```javascript
+helpers.addTrack('inventory-container', [
+  {
+    name: 'Inventory Slots',
+    max: 5,
+    shape: 'square',
+    dynamic: true  // Adds a "max..." button
+  }
+]);
+```
+
 ### Everyone System - Universal Cards and Moves
 
 The "Everyone" role provides universal access to cards and moves for all characters:
