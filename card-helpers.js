@@ -686,6 +686,67 @@ window.CardHelpers = (function() {
     }
 
     /**
+     * Shared card initialization logic for both regular and inline cards
+     * Consolidates: tracks, tables, CardInitializers lookup, old convention fallback
+     *
+     * @param {string} cardId - ID of the card
+     * @param {HTMLElement} container - Container element for this card
+     * @param {string|null} suffix - Suffix for duplicates (null for regular cards)
+     */
+    function initializeCard(cardId, container, suffix = null) {
+        if (!container) {
+            console.warn(`initializeCard: No container provided for ${cardId}`);
+            return;
+        }
+
+        console.log(`CardHelpers.initializeCard: ${cardId} (suffix: ${suffix})`);
+
+        // Initialize dynamic tables
+        if (window.DynamicTable && window.DynamicTable.initializeInContainer) {
+            window.DynamicTable.initializeInContainer(container);
+        }
+
+        // Initialize tracks from data attributes
+        if (window.CardHelpers && window.CardHelpers.initializeTracks) {
+            window.CardHelpers.initializeTracks(container);
+        }
+
+        // Ensure CardInitializers namespace exists
+        window.CardInitializers = window.CardInitializers || {};
+
+        // Look for exported initialization function (new pattern)
+        const initFunction = window.CardInitializers[cardId];
+        if (typeof initFunction === 'function') {
+            try {
+                console.log(`CardHelpers.initializeCard: Calling CardInitializers['${cardId}'](container, suffix)`);
+                initFunction(container, suffix);
+                console.log(`CardHelpers.initializeCard: ${cardId} initialized successfully`);
+            } catch (error) {
+                console.error(`CardHelpers.initializeCard: Error initializing ${cardId}:`, error);
+            }
+        } else {
+            console.log(`CardHelpers.initializeCard: No CardInitializers function for ${cardId}`);
+
+            // Fallback to old convention-based approach for backwards compatibility
+            const functionName = 'initialize' + cardId
+                .split('-')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                .join('');
+
+            if (typeof window[functionName] === 'function') {
+                console.log(`CardHelpers.initializeCard: Falling back to ${functionName}(container, suffix)`);
+                try {
+                    window[functionName](container, suffix);
+                } catch (error) {
+                    console.error(`CardHelpers.initializeCard: Error in ${functionName}:`, error);
+                }
+            } else {
+                console.log(`CardHelpers.initializeCard: No initialization needed for ${cardId}`);
+            }
+        }
+    }
+
+    /**
      * Common dependency patterns
      */
     const DependencyPatterns = {
@@ -738,6 +799,7 @@ window.CardHelpers = (function() {
         createScopedHelpers,  // NEW: For duplicate card support
         initializeHideWhenUntaken,  // NEW: Auto hide-when-untaken functionality
         initializeTracks,  // NEW: Auto track initialization from data attributes
+        initializeCard,  // NEW: Shared card initialization (tracks + tables + CardInitializers)
         ValidationPatterns,
         DependencyPatterns
     };
