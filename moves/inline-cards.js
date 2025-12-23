@@ -7,64 +7,46 @@ window.InlineCards = (function() {
     'use strict';
 
     /**
-     * Suffix all id and for attributes in HTML string
+     * Attributes that need to be suffixed for duplicate cards
+     * This whitelist approach is more maintainable than regex with negative lookbehind
+     * See DATA_ATTRIBUTES.md for full documentation of all data attributes
+     */
+    const ATTRIBUTES_TO_SUFFIX = [
+        'id',                       // Element IDs
+        'for',                      // Label for attributes
+        'name',                     // Form control names (especially radio buttons)
+        'data-table-add',           // Dynamic table add buttons
+        'data-table-clear',         // Dynamic table clear buttons
+        'data-hide-when-untaken'    // Hide-when-untaken references
+    ];
+
+    /**
+     * Suffix all whitelisted attributes in HTML string using DOM manipulation
      * @param {string} html - HTML string to transform
-     * @param {string} suffix - Suffix to append to IDs
+     * @param {string} suffix - Suffix to append to attribute values
      * @returns {string} Transformed HTML
      */
     function suffixHTMLIds(html, suffix) {
         if (!suffix) return html;
 
-        // Replace id="xxx" with id="xxx_suffix"
-        html = html.replace(/\bid="([^"]+)"/g, (match, id) => {
-            return `id="${id}_${suffix}"`;
+        // Create a temporary container to parse the HTML
+        const temp = document.createElement('div');
+        temp.innerHTML = html;
+
+        // Get all elements (including nested ones)
+        const allElements = temp.querySelectorAll('*');
+
+        allElements.forEach(element => {
+            // Check each attribute in our whitelist
+            ATTRIBUTES_TO_SUFFIX.forEach(attr => {
+                if (element.hasAttribute(attr)) {
+                    const currentValue = element.getAttribute(attr);
+                    element.setAttribute(attr, `${currentValue}_${suffix}`);
+                }
+            });
         });
 
-        // Replace for="xxx" with for="xxx_suffix" (for label elements)
-        html = html.replace(/\bfor="([^"]+)"/g, (match, forId) => {
-            return `for="${forId}_${suffix}"`;
-        });
-
-        // Replace name="xxx" with name="xxx_suffix" (for form controls, especially radio buttons)
-        // Use negative lookbehind to avoid matching data-*-name attributes
-        html = html.replace(/(?<!data-\w+-|\w)name="([^"]+)"/g, (match, name) => {
-            return `name="${name}_${suffix}"`;
-        });
-
-        // Replace data-table-add="xxx" with data-table-add="xxx_suffix" (for dynamic tables)
-        html = html.replace(/\bdata-table-add="([^"]+)"/g, (match, tableId) => {
-            return `data-table-add="${tableId}_${suffix}"`;
-        });
-
-        // Replace data-hide-when-untaken="xxx" with data-hide-when-untaken="xxx_suffix"
-        html = html.replace(/\bdata-hide-when-untaken="([^"]+)"/g, (match, checkboxId) => {
-            return `data-hide-when-untaken="${checkboxId}_${suffix}"`;
-        });
-
-        // Also handle id='xxx', for='xxx', and name='xxx' (single quotes)
-        html = html.replace(/\bid='([^']+)'/g, (match, id) => {
-            return `id='${id}_${suffix}'`;
-        });
-
-        html = html.replace(/\bfor='([^']+)'/g, (match, forId) => {
-            return `for='${forId}_${suffix}'`;
-        });
-
-        // Use negative lookbehind to avoid matching data-*-name attributes
-        html = html.replace(/(?<!data-\w+-|\w)name='([^']+)'/g, (match, name) => {
-            return `name='${name}_${suffix}'`;
-        });
-
-        // Also handle data-table-add='xxx' and data-hide-when-untaken='xxx' (single quotes)
-        html = html.replace(/\bdata-table-add='([^']+)'/g, (match, tableId) => {
-            return `data-table-add='${tableId}_${suffix}'`;
-        });
-
-        html = html.replace(/\bdata-hide-when-untaken='([^']+)'/g, (match, checkboxId) => {
-            return `data-hide-when-untaken='${checkboxId}_${suffix}'`;
-        });
-
-        return html;
+        return temp.innerHTML;
     }
 
     /**
