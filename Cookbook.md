@@ -1238,6 +1238,7 @@ Track configs use the same format as move/stat tracks:
 - Visual feedback (filled/unfilled shapes)
 - Keyboard accessible (Tab to focus, Space/Enter to click)
 - All values persist to URL automatically
+- CSS automatically adjusted for card context (static positioning vs absolute for moves)
 
 **Example with dynamic max:**
 
