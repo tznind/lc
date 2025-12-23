@@ -218,6 +218,18 @@ window.InlineCards = (function() {
         setTimeout(function() {
             console.log(`Inline Cards: Attempting to initialize card functionality for: ${cardId} (suffix: ${suffix})`);
 
+            // Initialize dynamic tables for this inline card
+            if (container && window.DynamicTable && window.DynamicTable.initializeInContainer) {
+                console.log(`Inline Cards: Initializing dynamic tables for card: ${cardId}`);
+                window.DynamicTable.initializeInContainer(container);
+            }
+
+            // Initialize tracks from data attributes for this inline card
+            if (container && window.CardHelpers && window.CardHelpers.initializeTracks) {
+                console.log(`Inline Cards: Initializing tracks for card: ${cardId}`);
+                window.CardHelpers.initializeTracks(container);
+            }
+
             // Ensure CardInitializers namespace exists
             window.CardInitializers = window.CardInitializers || {};
 

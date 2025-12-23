@@ -909,6 +909,30 @@ data/cards/mycard/
 └── card.js       # Custom JavaScript (optional)
 ```
 
+#### When Do You Need JavaScript?
+
+**Most cards don't need JavaScript!** The following features work automatically with just HTML:
+
+✅ **No JavaScript needed for:**
+- Basic form inputs (text, number, checkbox, select, textarea)
+- Automatic persistence to URL
+- Dynamic tables (`data-dynamic-table`)
+- Track counters (`data-track` attributes)
+- Hide-when-untaken visibility (`data-hide-when-untaken`)
+- Form validation (HTML5 validation attributes)
+
+⚠️ **Only create `card.js` if you need:**
+- Auto-fill based on selections (e.g., ship class presets)
+- Custom validation beyond HTML5
+- Field dependencies (e.g., "void shields require plasma drive")
+- Programmatic table manipulation (add/clear rows via code)
+- Programmatic track manipulation (add/update tracks via code)
+- Custom event handlers or business logic
+
+**Examples:**
+- The `robotic-companion` card has NO JavaScript - just basic HTML form inputs
+- The `squad` card has NO JavaScript - uses dynamic tables, tracks, and hide-when-untaken, all with just HTML!
+
 #### Card Definition (card.json)
 ```json
 {
@@ -1042,7 +1066,9 @@ Edit `data/availability.json` and add a `cards` array to any role:
 
 **When to use:** For tracking arbitrary rows of data (crew members, inventory, squad rosters, etc.).
 
-#### What to Add to Your Card
+#### Basic Usage (No JavaScript Required!)
+
+Dynamic tables are **automatically initialized** by the card system. Just add the HTML - no JavaScript needed unless you want programmatic manipulation.
 
 **HTML** (`card.html`):
 ```html
@@ -1061,18 +1087,21 @@ Edit `data/availability.json` and add a `cards` array to any role:
 <button type="button" data-table-add="members">+ Add Row</button>
 ```
 
+That's it! The table will automatically:
+- Add/delete rows via the button
+- Persist data to the URL
+- Work with duplicate cards
+
+#### Advanced: Programmatic Manipulation (Optional)
+
+**Only create a `card.js` file if you need to manipulate tables via code.** For example:
+
 **JavaScript** (`card.js`):
 ```javascript
 window.CardInitializers.mycard = function(container, suffix) {
   const helpers = window.CardHelpers.createScopedHelpers(container, suffix);
 
-  // Initialize dynamic tables
-  // IMPORTANT: Don't pass suffix - the table ID is already auto-suffixed in the HTML
-  if (window.DynamicTable) {
-    window.DynamicTable.initializeInContainer(container);
-  }
-
-  // Example: Add helper functions for users
+  // Example: Add a quick-add button for common entries
   helpers.addEventListener('quick_add_btn', 'click', () => {
     helpers.addTableRow('members', {
       name: 'New Member',
@@ -1176,15 +1205,47 @@ Add `data-hide-when-untaken="checkbox-id"` to any element you want to hide:
 
 #### Add Track Counters
 
-Easily add track counters to cards using the same JSON format as moves and stats.
+Track counters are **automatically initialized** from data attributes. Just add the HTML - no JavaScript needed unless you want programmatic control.
 
-**Usage:**
+**Basic Usage (No JavaScript Required!):**
+
+```html
+<div class="card mycard-card">
+  <h3>My Card</h3>
+
+  <!-- Single track with circles -->
+  <div id="loyalty_track"
+       data-track
+       data-track-name="Loyalty"
+       data-track-max="3"
+       data-track-shape="circle"></div>
+
+  <!-- Multiple tracks in separate containers -->
+  <div id="wounds_track"
+       data-track
+       data-track-name="Wounds"
+       data-track-max="6"
+       data-track-shape="square"></div>
+
+  <div id="armor_track"
+       data-track
+       data-track-name="Armor"
+       data-track-max="3"
+       data-track-shape="hexagon"></div>
+</div>
+```
+
+That's it! The tracks will automatically initialize and persist to the URL.
+
+**Advanced: Programmatic Control (Optional)**
+
+Only create a `card.js` file if you need to add tracks dynamically via code:
 
 ```javascript
 window.CardInitializers.mycard = function(container, suffix) {
   const helpers = window.CardHelpers.createScopedHelpers(container, suffix);
 
-  // Add track counters to a container element
+  // Programmatically add tracks
   helpers.addTrack('loyalty-container', [
     {
       name: 'Loyalty',
@@ -1192,44 +1253,23 @@ window.CardInitializers.mycard = function(container, suffix) {
       shape: 'circle'
     }
   ]);
-
-  // Add multiple tracks
-  helpers.addTrack('resources-container', [
-    {
-      name: 'Wounds',
-      max: 6,
-      shape: 'square'
-    },
-    {
-      name: 'Armor',
-      max: 3,
-      shape: 'hexagon'
-    }
-  ]);
 };
-```
-
-**HTML:**
-
-```html
-<div class="card mycard-card">
-  <h3>My Card</h3>
-
-  <!-- Container where track will be added -->
-  <div id="loyalty-container"></div>
-
-  <div id="resources-container"></div>
-</div>
 ```
 
 **Track Configuration:**
 
-Track configs use the same format as move/stat tracks:
+**Data Attributes:**
+- `data-track` (required): Marks element as a track container
+- `data-track-name` (required): Display name for the track
+- `data-track-max` (optional, default 5): Maximum number of points
+- `data-track-shape` (optional, default 'square'): Shape of track points
+  - Options: `'square'`, `'circle'`, `'triangle'`, `'hexagon'`
+- `data-track-dynamic` (optional, default false): Add a "max..." button to adjust maximum
 
+**Programmatic (addTrack method):**
 - `name` (required): Display name for the track
 - `max` (optional, default 5): Maximum number of points
 - `shape` (optional, default 'square'): Shape of track points
-  - Options: `'square'`, `'circle'`, `'triangle'`, `'hexagon'`
 - `dynamic` (optional, default false): Add a "max..." button to adjust maximum
 
 **Features:**
@@ -1240,17 +1280,15 @@ Track configs use the same format as move/stat tracks:
 - All values persist to URL automatically
 - CSS automatically adjusted for card context (static positioning vs absolute for moves)
 
-**Example with dynamic max:**
+**Example with dynamic max (data attributes):**
 
-```javascript
-helpers.addTrack('inventory-container', [
-  {
-    name: 'Inventory Slots',
-    max: 5,
-    shape: 'square',
-    dynamic: true  // Adds a "max..." button
-  }
-]);
+```html
+<div id="inventory_track"
+     data-track
+     data-track-name="Inventory Slots"
+     data-track-max="5"
+     data-track-shape="square"
+     data-track-dynamic="true"></div>
 ```
 
 #### Automatic Suffixing for Duplicate Cards

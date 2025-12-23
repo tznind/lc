@@ -150,6 +150,11 @@ window.Cards = (function() {
             const cardWrapper = document.querySelector(`.card-wrapper[data-card-id="${cardId}"]`);
             const cardElement = cardWrapper ? cardWrapper.querySelector('.card') : null;
 
+            // Initialize tracks from data attributes for this card
+            if (cardElement && window.CardHelpers && window.CardHelpers.initializeTracks) {
+                window.CardHelpers.initializeTracks(cardElement);
+            }
+
             // Look for exported initialization function
             const initFunction = window.CardInitializers[cardId];
             if (typeof initFunction === 'function') {
@@ -244,6 +249,11 @@ window.Cards = (function() {
                 // Initialize hide-when-untaken functionality
                 if (window.CardHelpers && window.CardHelpers.initializeHideWhenUntaken) {
                     window.CardHelpers.initializeHideWhenUntaken();
+                }
+
+                // Initialize dynamic tables automatically
+                if (window.DynamicTable && window.DynamicTable.initializeInContainer) {
+                    window.DynamicTable.initializeInContainer(container);
                 }
             }, 100);
 

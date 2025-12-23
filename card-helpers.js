@@ -533,6 +533,89 @@ window.CardHelpers = (function() {
     }
 
     /**
+     * Initialize tracks from data attributes
+     *
+     * Automatically finds and initializes track counters defined with data attributes.
+     *
+     * Usage in HTML:
+     * <div id="loyalty_track"
+     *      data-track
+     *      data-track-name="Loyalty"
+     *      data-track-max="3"
+     *      data-track-shape="circle"
+     *      data-track-dynamic="true">
+     * </div>
+     *
+     * Attributes:
+     * - data-track: Marks element as a track container (required)
+     * - data-track-name: Display name for the track (required)
+     * - data-track-max: Maximum value (default: 5)
+     * - data-track-shape: Shape of markers - "circle" or "square" (default: square)
+     * - data-track-dynamic: Allow changing max value (default: false)
+     */
+    function initializeTracks(container = document) {
+        console.log('initializeTracks: Starting initialization', { container, hasTrackModule: !!window.Track });
+
+        if (!window.Track) {
+            console.warn('initializeTracks: Track module not available');
+            return;
+        }
+
+        const trackContainers = container.querySelectorAll('[data-track]');
+        console.log(`initializeTracks: Found ${trackContainers.length} track containers`, trackContainers);
+        const urlParams = new URLSearchParams(location.search);
+
+        trackContainers.forEach(containerElement => {
+            const trackId = containerElement.id;
+            if (!trackId) {
+                console.warn('initializeTracks: Track container missing id attribute:', containerElement);
+                return;
+            }
+
+            // Skip if already initialized (check if it already has track display)
+            if (containerElement.querySelector('.track-counter, .track-counter-grid')) {
+                return;
+            }
+
+            // Read track configuration from data attributes
+            const trackName = containerElement.getAttribute('data-track-name');
+            console.log(`initializeTracks: Read trackName="${trackName}" from element ${trackId}`);
+
+            if (!trackName) {
+                console.warn(`initializeTracks: Track container ${trackId} missing data-track-name`);
+                return;
+            }
+
+            const trackConfig = {
+                name: trackName,
+                max: parseInt(containerElement.getAttribute('data-track-max')) || 5,
+                shape: containerElement.getAttribute('data-track-shape') || 'square',
+                dynamic: containerElement.getAttribute('data-track-dynamic') === 'true'
+            };
+
+            console.log(`initializeTracks: Creating track for ${trackId}`, trackConfig);
+            console.log(`initializeTracks: trackConfig.name = "${trackConfig.name}"`);
+
+            // Create a pseudo-move object for the Track system
+            const pseudoMove = {
+                id: trackId,
+                tracks: [trackConfig]
+            };
+
+            // Create and append track display
+            const trackDisplay = window.Track.createTrackDisplay(pseudoMove, urlParams);
+            console.log(`initializeTracks: Track display created for ${trackId}:`, trackDisplay);
+
+            if (trackDisplay) {
+                containerElement.appendChild(trackDisplay);
+                console.log(`initializeTracks: Track display appended to ${trackId}`);
+            } else {
+                console.warn(`initializeTracks: createTrackDisplay returned null for ${trackId}`);
+            }
+        });
+    }
+
+    /**
      * Common dependency patterns
      */
     const DependencyPatterns = {
@@ -584,6 +667,7 @@ window.CardHelpers = (function() {
         createButton,
         createScopedHelpers,  // NEW: For duplicate card support
         initializeHideWhenUntaken,  // NEW: Auto hide-when-untaken functionality
+        initializeTracks,  // NEW: Auto track initialization from data attributes
         ValidationPatterns,
         DependencyPatterns
     };
