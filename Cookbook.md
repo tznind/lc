@@ -1169,11 +1169,13 @@ The CardHelpers module provides utilities to make card development easier and re
 
 #### Hide When Untaken
 
-Automatically hide card elements when their associated checkbox is unchecked and "Hide untaken moves" is enabled.
+Automatically hide card elements when their associated field is "untaken" (empty/unchecked) and "Hide untaken moves" is enabled.
+
+**Works with any input type:** checkbox, radio, text, select, number, date, etc.
 
 **Usage:**
 
-Add `data-hide-when-untaken="checkbox-id"` to any element you want to hide:
+Add `data-hide-when-untaken="field-id"` to any element you want to hide:
 
 ```html
 <div class="card initiates-card">
@@ -1198,10 +1200,15 @@ Add `data-hide-when-untaken="checkbox-id"` to any element you want to hide:
 **How it works:**
 - No JavaScript required in your card
 - Elements are automatically hidden when:
-  1. The referenced checkbox is unchecked, AND
+  1. The referenced field is "untaken" (unchecked for checkboxes, empty for text/select/etc.), AND
   2. The global "Hide untaken moves" checkbox is enabled
 - Elements automatically show when either condition changes
 - Works with any element type (divs, sections, rows, etc.)
+- Supports all input types:
+  - **Checkbox/Radio**: Hidden when unchecked
+  - **Text/Textarea**: Hidden when empty
+  - **Select**: Hidden when no value selected
+  - **Number/Date**: Hidden when empty
 
 #### Add Track Counters
 

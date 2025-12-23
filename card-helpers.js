@@ -473,12 +473,71 @@ window.CardHelpers = (function() {
     let hideWhenUntakenInitialized = false;
 
     /**
+     * Check if a field is "taken" (has a meaningful value)
+     * Works flexibly for all input types
+     */
+    function isFieldTaken(field) {
+        if (!field) return false;
+
+        const type = field.type?.toLowerCase();
+
+        switch (type) {
+            case 'checkbox':
+                return field.checked;
+
+            case 'radio':
+                // For radio buttons, check if ANY radio with the same name is checked
+                if (field.name) {
+                    const radioGroup = document.querySelectorAll(`input[type="radio"][name="${field.name}"]`);
+                    return Array.from(radioGroup).some(radio => radio.checked);
+                }
+                return field.checked;
+
+            case 'text':
+            case 'textarea':
+            case 'email':
+            case 'url':
+            case 'tel':
+            case 'search':
+            case 'password':
+                return field.value && field.value.trim() !== '';
+
+            case 'number':
+            case 'range':
+                return field.value !== '';
+
+            case 'select-one':
+            case 'select-multiple':
+                return field.value && field.value !== '';
+
+            case 'date':
+            case 'time':
+            case 'datetime-local':
+            case 'month':
+            case 'week':
+                return field.value !== '';
+
+            default:
+                // For unknown types, check if it has a value or is checked
+                if ('checked' in field) {
+                    return field.checked;
+                }
+                if ('value' in field) {
+                    return field.value && field.value !== '';
+                }
+                return false;
+        }
+    }
+
+    /**
      * Initialize hide-when-untaken functionality
      * Automatically hides/shows elements based on data-hide-when-untaken attribute
      *
+     * Works with any input type: checkbox, radio, text, select, etc.
+     *
      * Usage in card HTML:
-     * <div data-hide-when-untaken="checkbox_id">
-     *   This element will be hidden when checkbox_id is unchecked and "hide untaken moves" is enabled
+     * <div data-hide-when-untaken="field_id">
+     *   This element will be hidden when field_id is empty/unchecked and "hide untaken moves" is enabled
      * </div>
      */
     function initializeHideWhenUntaken() {
@@ -492,18 +551,18 @@ window.CardHelpers = (function() {
             const elementsToToggle = document.querySelectorAll('[data-hide-when-untaken]');
 
             elementsToToggle.forEach(element => {
-                const checkboxId = element.getAttribute('data-hide-when-untaken');
-                const checkbox = document.getElementById(checkboxId);
+                const fieldId = element.getAttribute('data-hide-when-untaken');
+                const field = document.getElementById(fieldId);
 
-                if (checkbox) {
-                    // Hide if: hide_untaken is checked AND the referenced checkbox is unchecked
-                    if (hideUntaken && !checkbox.checked) {
+                if (field) {
+                    // Hide if: hide_untaken is checked AND the referenced field is not taken
+                    if (hideUntaken && !isFieldTaken(field)) {
                         element.style.display = 'none';
                     } else {
                         element.style.display = '';
                     }
                 } else {
-                    console.warn(`Hide-when-untaken: Checkbox not found: ${checkboxId}`);
+                    console.warn(`Hide-when-untaken: Field not found: ${fieldId}`);
                 }
             });
         }
@@ -513,11 +572,22 @@ window.CardHelpers = (function() {
             // Listen for changes to hide_untaken checkbox
             hideUntakenCheckbox.addEventListener('change', updateHideWhenUntaken);
 
-            // Listen for changes to any checkbox that might be referenced
+            // Listen for changes to any input/select/textarea that might be referenced
             document.addEventListener('change', (event) => {
                 const target = event.target;
-                if (target.type === 'checkbox' && target.id) {
-                    // Check if any element references this checkbox
+                if (target.id) {
+                    // Check if any element references this field
+                    const referencingElements = document.querySelectorAll(`[data-hide-when-untaken="${target.id}"]`);
+                    if (referencingElements.length > 0) {
+                        updateHideWhenUntaken();
+                    }
+                }
+            });
+
+            // Also listen for input events (for text fields that update as you type)
+            document.addEventListener('input', (event) => {
+                const target = event.target;
+                if (target.id) {
                     const referencingElements = document.querySelectorAll(`[data-hide-when-untaken="${target.id}"]`);
                     if (referencingElements.length > 0) {
                         updateHideWhenUntaken();

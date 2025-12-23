@@ -26,7 +26,8 @@ window.InlineCards = (function() {
         });
 
         // Replace name="xxx" with name="xxx_suffix" (for form controls, especially radio buttons)
-        html = html.replace(/\bname="([^"]+)"/g, (match, name) => {
+        // Use negative lookbehind to avoid matching data-*-name attributes
+        html = html.replace(/(?<!data-\w+-|\w)name="([^"]+)"/g, (match, name) => {
             return `name="${name}_${suffix}"`;
         });
 
@@ -49,7 +50,8 @@ window.InlineCards = (function() {
             return `for='${forId}_${suffix}'`;
         });
 
-        html = html.replace(/\bname='([^']+)'/g, (match, name) => {
+        // Use negative lookbehind to avoid matching data-*-name attributes
+        html = html.replace(/(?<!data-\w+-|\w)name='([^']+)'/g, (match, name) => {
             return `name='${name}_${suffix}'`;
         });
 
@@ -153,6 +155,12 @@ window.InlineCards = (function() {
                     if (form && window.Persistence) {
                         console.log(`InlineCards.displayCard: Refreshing persistence for card ${cardId}`);
                         window.Persistence.refreshPersistence(form);
+                    }
+
+                    // Update hide-when-untaken visibility for the newly added card
+                    // This ensures elements are shown/hidden based on restored values
+                    if (window.CardHelpers && window.CardHelpers.initializeHideWhenUntaken) {
+                        window.CardHelpers.initializeHideWhenUntaken();
                     }
                 }, 50);
 
