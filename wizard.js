@@ -26,7 +26,7 @@ window.Wizard = {
   // Build modal HTML
   _buildModal: function(wizardData, options) {
     const modal = document.createElement('div');
-    modal.className = 'gear-wizard-modal';
+    modal.className = 'wizard-modal';
 
     // Separate auto-get items from choice items
     const autoItems = [];
@@ -48,7 +48,7 @@ window.Wizard = {
     let autoItemsHTML = '';
     if (autoItems.length > 0) {
       autoItemsHTML = `
-        <div class="gear-wizard-auto-items">
+        <div class="wizard-auto-items">
           <h4>You will receive:</h4>
           <ul>
             ${autoItems.map(item => `<li>${this._escapeHtml(item.item)}</li>`).join('')}
@@ -61,17 +61,17 @@ window.Wizard = {
     let choicesHTML = '';
     if (choiceGroups.length > 0) {
       choicesHTML = `
-        <div class="gear-wizard-choices">
+        <div class="wizard-choices">
           ${choiceGroups.map(group => {
             const inputType = group.type === 'pickOne' ? 'radio' : 'checkbox';
             const inputName = `wizard_choice_${group.groupIndex}`;
 
             return `
-              <div class="gear-wizard-choice-group">
+              <div class="wizard-choice-group">
                 <h4>${this._escapeHtml(group.title || 'Choose:')}</h4>
-                <div class="gear-wizard-options">
+                <div class="wizard-options">
                   ${group.options.map((option, optIndex) => `
-                    <div class="gear-wizard-option">
+                    <div class="wizard-option">
                       <input type="${inputType}"
                              name="${inputName}"
                              value="${optIndex}"
@@ -90,14 +90,14 @@ window.Wizard = {
     }
 
     modal.innerHTML = `
-      <div class="gear-wizard-content">
-        <button class="gear-wizard-close" aria-label="Close">&times;</button>
+      <div class="wizard-content">
+        <button class="wizard-close" aria-label="Close">&times;</button>
         <h3>${this._escapeHtml(options.title || 'Make Your Selections')}</h3>
         ${autoItemsHTML}
         ${choicesHTML}
-        <div class="gear-wizard-actions">
-          <button type="button" class="gear-wizard-cancel">Cancel</button>
-          <button type="button" class="gear-wizard-ok">OK</button>
+        <div class="wizard-actions">
+          <button type="button" class="wizard-cancel">Cancel</button>
+          <button type="button" class="wizard-ok">OK</button>
         </div>
       </div>
     `;
@@ -147,21 +147,21 @@ window.Wizard = {
   // Setup event handlers
   _setupHandlers: function(modal, wizardData, resolve) {
     // Close button
-    const closeBtn = modal.querySelector('.gear-wizard-close');
+    const closeBtn = modal.querySelector('.wizard-close');
     closeBtn.addEventListener('click', () => {
       modal.remove();
       resolve(null);
     });
 
     // Cancel button
-    const cancelBtn = modal.querySelector('.gear-wizard-cancel');
+    const cancelBtn = modal.querySelector('.wizard-cancel');
     cancelBtn.addEventListener('click', () => {
       modal.remove();
       resolve(null);
     });
 
     // OK button
-    const okBtn = modal.querySelector('.gear-wizard-ok');
+    const okBtn = modal.querySelector('.wizard-ok');
     okBtn.addEventListener('click', () => {
       const selections = this._collectSelections(modal, wizardData);
       modal.remove();

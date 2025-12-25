@@ -1163,6 +1163,216 @@ All helpers automatically handle suffix for duplicate cards - just use the base 
 - Multiple tables per card supported
 - Programmatic manipulation via helper methods
 
+### Using the Wizard System in Cards
+
+The Wizard system provides an interactive modal popup for making selections and choices. It's perfect for guiding users through structured decisions like selecting squad loadouts, choosing starting equipment, or configuring complex options.
+
+**When to use:** When you want users to make selections through a guided popup interface rather than directly in the card.
+
+#### Basic Wizard Usage
+
+The wizard is available globally as `window.Wizard.show()` and returns a Promise with the user's selections.
+
+**Simple Example - Checkboxes (Pick Multiple):**
+
+```javascript
+window.CardInitializers.mycard = function(container, suffix) {
+  const helpers = window.CardHelpers.createScopedHelpers(container, suffix);
+
+  helpers.addEventListener('setup_btn', 'click', async () => {
+    const wizardData = [
+      {
+        type: 'pick',  // Checkboxes - can select multiple
+        title: 'Choose Equipment (pick any):',
+        options: [
+          { item: 'Combat Knife', weight: 1 },
+          { item: 'Flashlight', weight: 1 },
+          { item: 'Medkit', weight: 2 }
+        ]
+      }
+    ];
+
+    const result = await window.Wizard.show(wizardData, {
+      title: 'Equipment Selection'
+    });
+
+    if (result) {
+      console.log('User selected:', result);
+      // result = [{item: 'Combat Knife', weight: 1}, {item: 'Medkit', weight: 2}]
+    }
+  });
+};
+```
+
+**Radio Buttons Example (Pick One):**
+
+```javascript
+const wizardData = [
+  {
+    type: 'pickOne',  // Radio buttons - must pick exactly one
+    title: 'Choose a Specialty:',
+    options: [
+      { item: 'Engineering', weight: 0 },
+      { item: 'Medical', weight: 0 },
+      { item: 'Combat', weight: 0 }
+    ]
+  }
+];
+
+const result = await window.Wizard.show(wizardData, {
+  title: 'Select Specialty'
+});
+// result = [{item: 'Engineering', weight: 0}]
+```
+
+**Auto-Get Items (No Choice):**
+
+```javascript
+const wizardData = [
+  {
+    type: 'get',  // User automatically receives these
+    options: [
+      { item: 'Standard Uniform', weight: 0 },
+      { item: 'ID Badge', weight: 0 }
+    ]
+  },
+  {
+    type: 'pickOne',
+    title: 'Choose a Weapon:',
+    options: [
+      { item: 'Pistol', weight: 1 },
+      { item: 'Rifle', weight: 2 }
+    ]
+  }
+];
+```
+
+**Combined Example:**
+
+```javascript
+const wizardData = [
+  {
+    type: 'get',  // These are auto-included
+    options: [
+      { item: 'Basic Armor', weight: 0 },
+      { item: 'Radio', weight: 0 }
+    ]
+  },
+  {
+    type: 'pickOne',  // Must choose one
+    title: 'Choose Primary Weapon:',
+    options: [
+      { item: 'Lasgun', weight: 1 },
+      { item: 'Bolter', weight: 2 },
+      { item: 'Plasma Gun', weight: 3 }
+    ]
+  },
+  {
+    type: 'pick',  // Can choose multiple
+    title: 'Additional Gear (pick any):',
+    options: [
+      { item: 'Grenades', weight: 1 },
+      { item: 'Medkit', weight: 1 },
+      { item: 'Ammunition', weight: 1 }
+    ]
+  }
+];
+
+const result = await window.Wizard.show(wizardData, {
+  title: 'Squad Loadout'
+});
+
+if (result) {
+  // Process selections - add to dynamic table, update fields, etc.
+  result.forEach(selection => {
+    helpers.addTableRow('equipment', {
+      item: selection.item,
+      weight: selection.weight
+    });
+  });
+}
+```
+
+#### Wizard Data Structure
+
+Each wizard entry has:
+- `type` (required): `'get'`, `'pickOne'`, or `'pick'`
+  - `'get'`: Items user receives automatically (displayed but not selectable)
+  - `'pickOne'`: Radio buttons (must select exactly one)
+  - `'pick'`: Checkboxes (can select multiple)
+- `title` (optional): Heading for this choice group (not used for `'get'` type)
+- `options` (required): Array of items
+  - `item` (required): Display text for the option
+  - `weight` (optional): Numeric value associated with this item
+
+#### Wizard Options
+
+The second parameter to `Wizard.show()` accepts:
+- `title` (optional): Modal title (defaults to "Make Your Selections")
+
+#### Return Value
+
+- Returns `null` if user cancels or closes the wizard
+- Returns an array of selected items: `[{item: string, weight: number}, ...]`
+- For `'get'` type: All items are included in the result
+- For `'pickOne'` type: Exactly one item (or none if none selected)
+- For `'pick'` type: Zero or more items based on what user checked
+
+#### Real-World Example: Squad Preset Loadouts
+
+```javascript
+// In squad card.js
+window.CardInitializers.squad = function(container, suffix) {
+  const helpers = window.CardHelpers.createScopedHelpers(container, suffix);
+
+  helpers.addEventListener('preset_loadout_btn', 'click', async () => {
+    const wizardData = [
+      {
+        type: 'pickOne',
+        title: 'Choose Squad Type:',
+        options: [
+          { item: 'Assault Squad', weight: 0 },
+          { item: 'Scout Squad', weight: 0 },
+          { item: 'Heavy Weapons Squad', weight: 0 }
+        ]
+      }
+    ];
+
+    const result = await window.Wizard.show(wizardData, {
+      title: 'Squad Preset'
+    });
+
+    if (result && result.length > 0) {
+      const squadType = result[0].item;
+
+      // Clear existing members
+      helpers.clearTable('sq_members');
+
+      // Add preset members based on selection
+      if (squadType === 'Assault Squad') {
+        helpers.addTableRow('sq_members', {
+          name: 'Sgt. Veteran', role: 'Leader', hp: 15, status: 'Ready'
+        });
+        helpers.addTableRow('sq_members', {
+          name: 'Trooper Alpha', role: 'Assault', hp: 12, status: 'Ready'
+        });
+        helpers.addTableRow('sq_members', {
+          name: 'Trooper Beta', role: 'Assault', hp: 12, status: 'Ready'
+        });
+      } else if (squadType === 'Scout Squad') {
+        helpers.addTableRow('sq_members', {
+          name: 'Scout Leader', role: 'Scout', hp: 10, status: 'Ready'
+        });
+        helpers.addTableRow('sq_members', {
+          name: 'Recon Specialist', role: 'Scout', hp: 10, status: 'Ready'
+        });
+      }
+      // ... etc
+    }
+  });
+};
+```
+
 ### Card Helper Functions
 
 The CardHelpers module provides utilities to make card development easier and reduce boilerplate code.
