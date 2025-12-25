@@ -45,12 +45,7 @@ window.CardInitializers.squad = function(container, suffix) {
       {
         type: 'pickOne',
         title: 'Choose Squad Type:',
-        options: [
-          { item: 'Assault Squad', weight: 0 },
-          { item: 'Scout Squad', weight: 0 },
-          { item: 'Heavy Weapons Squad', weight: 0 },
-          { item: 'Medical Team', weight: 0 }
-        ]
+        options: ['Assault Squad', 'Scout Squad', 'Heavy Weapons Squad', 'Medical Team']
       }
     ];
 
@@ -59,7 +54,7 @@ window.CardInitializers.squad = function(container, suffix) {
     });
 
     if (result && result.length > 0) {
-      const squadType = result[0].item;
+      const squadType = result[0];
       const preset = squadPresets[squadType];
 
       if (preset) {

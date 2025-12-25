@@ -6,7 +6,7 @@ window.Wizard = {
    * Show wizard modal with choices
    * @param {Array} wizardData - Array of wizard entries with type, options, etc.
    * @param {Object} options - Optional config {title: string}
-   * @returns {Promise<Array>} Resolves with array of {item, weight} objects, or null if cancelled
+   * @returns {Promise<Array>} Resolves with array of selected item strings, or null if cancelled
    */
   show: function(wizardData, options = {}) {
     return new Promise((resolve) => {
@@ -51,7 +51,7 @@ window.Wizard = {
         <div class="wizard-auto-items">
           <h4>You will receive:</h4>
           <ul>
-            ${autoItems.map(item => `<li>${this._escapeHtml(item.item)}</li>`).join('')}
+            ${autoItems.map(item => `<li>${this._escapeHtml(item)}</li>`).join('')}
           </ul>
         </div>
       `;
@@ -76,9 +76,8 @@ window.Wizard = {
                              name="${inputName}"
                              value="${optIndex}"
                              id="${inputName}_${optIndex}"
-                             data-item="${this._escapeHtml(option.item)}"
-                             data-weight="${option.weight || 0}">
-                      <label for="${inputName}_${optIndex}">${this._escapeHtml(option.item)}</label>
+                             data-item="${this._escapeHtml(option)}">
+                      <label for="${inputName}_${optIndex}">${this._escapeHtml(option)}</label>
                     </div>
                   `).join('')}
                 </div>
@@ -113,30 +112,21 @@ window.Wizard = {
       if (entry.type === 'get') {
         // Add all auto-get items
         entry.options.forEach(option => {
-          results.push({
-            item: option.item,
-            weight: option.weight || 0
-          });
+          results.push(option);
         });
       } else if (entry.type === 'pickOne') {
         // Add selected radio option
         const inputName = `wizard_choice_${index}`;
         const selectedRadio = modal.querySelector(`input[name="${inputName}"]:checked`);
         if (selectedRadio) {
-          results.push({
-            item: selectedRadio.getAttribute('data-item'),
-            weight: parseFloat(selectedRadio.getAttribute('data-weight')) || 0
-          });
+          results.push(selectedRadio.getAttribute('data-item'));
         }
       } else if (entry.type === 'pick') {
         // Add all checked checkboxes
         const inputName = `wizard_choice_${index}`;
         const selectedCheckboxes = modal.querySelectorAll(`input[name="${inputName}"]:checked`);
         selectedCheckboxes.forEach(checkbox => {
-          results.push({
-            item: checkbox.getAttribute('data-item'),
-            weight: parseFloat(checkbox.getAttribute('data-weight')) || 0
-          });
+          results.push(checkbox.getAttribute('data-item'));
         });
       }
     });
