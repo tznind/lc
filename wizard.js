@@ -136,6 +136,21 @@ window.Wizard = {
 
   // Setup event handlers
   _setupHandlers: function(modal, wizardData, resolve) {
+    // Make entire option area clickable
+    const options = modal.querySelectorAll('.wizard-option');
+    options.forEach(option => {
+      option.addEventListener('click', (e) => {
+        // Don't double-trigger if clicking directly on input or label
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'LABEL') {
+          return;
+        }
+        const input = option.querySelector('input');
+        if (input) {
+          input.checked = true;
+        }
+      });
+    });
+
     // Close button
     const closeBtn = modal.querySelector('.wizard-close');
     closeBtn.addEventListener('click', () => {
