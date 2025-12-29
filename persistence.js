@@ -99,33 +99,53 @@ window.Persistence = (function() {
         const params = new URLSearchParams(location.search);
         const inputs = getPersistableInputs(form);
         const loadedValues = {};
-        
+        const changedInputs = []; // Track which inputs were changed
+
         inputs.forEach(input => {
             if (input.type === 'radio') {
                 // For radio buttons, check if the name (group) has a value that matches this input's value
                 if (params.has(input.name)) {
                     const savedValue = params.get(input.name);
+                    const wasChecked = input.checked;
                     input.checked = input.value === savedValue;
                     if (input.checked) {
                         loadedValues[input.name] = savedValue;
+                        if (!wasChecked) {
+                            changedInputs.push(input);
+                        }
                     }
                 }
             } else if (params.has(input.id)) {
                 const value = params.get(input.id);
-                
+
                 if (input.type === 'checkbox') {
                     // For checkboxes, set checked state
                     // Handle both '1' (checked) and '0' (explicitly unchecked)
+                    const wasChecked = input.checked;
                     input.checked = value === '1';
                     loadedValues[input.id] = input.checked;
+                    if (input.checked !== wasChecked) {
+                        changedInputs.push(input);
+                    }
                 } else {
                     // For regular inputs, set value
+                    const oldValue = input.value;
                     input.value = value;
                     loadedValues[input.id] = value;
+                    if (oldValue !== value) {
+                        changedInputs.push(input);
+                    }
                 }
             }
         });
-        
+
+        // Dispatch change events for inputs that were actually changed
+        // This notifies other systems (like placeholders.js) that depend on change events
+        changedInputs.forEach(input => {
+            const event = new Event('change', { bubbles: true });
+            input.dispatchEvent(event);
+        });
+
         return loadedValues;
     }
 
