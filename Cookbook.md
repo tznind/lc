@@ -5,6 +5,7 @@ This comprehensive guide covers creating roles, moves, and cards for the charact
 All changes can be acomplished by modifying the [data](./data) directory and/or the main [cs.html](./cs.html) page.  Core javascript code of the application should not be modified.
 
 ## Table of Contents
+- [Events System](#events-system)
 - [Help Buttons](#help-buttons)
 - [Customizing Stats](#customizing-stats)
   - [Modifying Stats](#modifying-stats)
@@ -32,6 +33,30 @@ All changes can be acomplished by modifying the [data](./data) directory and/or 
 - [Cards System](#cards-system)
   - [Everyone System - Universal Cards and Moves](#everyone-system---universal-cards-and-moves)
 - [Validation and Error Detection](#validation-and-error-detection)
+
+---
+
+## Events System
+
+The application provides a global event system (`AppEvents`) for hooking into application lifecycle.
+
+### Basic Usage
+
+```javascript
+// Listen for initialization complete
+AppEvents.on('initializationComplete', function() {
+    console.log('App is ready!');
+    // Your custom code here
+});
+```
+
+**Key feature:** If you register after an event already fired, your callback runs immediately. This prevents race conditions during initialization.
+
+### Available Events
+
+- **`initializationComplete`**: Fires when the app finishes loading (roles, moves, cards, URL state)
+
+You can add event listeners in your `cs.html` page or in custom card JavaScript files.
 
 ---
 
