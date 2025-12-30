@@ -66,6 +66,11 @@
 
             console.log('Application initialized successfully');
 
+            // Trigger initialization complete event for other modules
+            if (window.AppEvents) {
+                window.AppEvents.trigger('initializationComplete');
+            }
+
         } catch (error) {
             console.error('Failed to initialize application:', error);
             throw error;
