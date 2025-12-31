@@ -1,0 +1,145 @@
+[
+  {
+    "id": "l1a2b3",
+    "title": "Reunir a la Cohorte (+Influencia)",
+    "outcomes": [
+      {
+        "range": "≥ 10",
+        "text": "Tu voz atraviesa el estruendo de la batalla. La moral aumenta y tus guerreros actúan con precisión intrépida.",
+        "bullets": []
+      },
+      {
+        "range": "7–9",
+        "text": "Obedecen, pero la vacilación o la duda persisten. **Elige uno**:",
+        "bullets": [
+          "Siguen, pero a un costo mayor: sufren pérdidas o gastan recursos en exceso",
+          "Tienen éxito, pero actúan con celo brutal, creando daños colaterales",
+          "Dudan en un momento crucial; el GM decide la consecuencia"
+        ]
+      },
+      {
+        "range": "≤ 6",
+        "text": "Tu mando vacila:",
+        "bullets": [
+          "Las tropas se dispersan y huyen con miedo",
+          "Malinterpretan tu orden con resultados desastrosos",
+          "Un rival aprovecha el momento para socavar tu autoridad"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "l4c5d6",
+    "title": "Estratagema Estratégica (+Pericia)",
+    "description": "Despliega una maniobra táctica audaz. Después del éxito, puedes usar **Voz de Dominio** para asegurar que tus órdenes se cumplan al pie de la letra.",
+    "category": "Movimientos de Mando",
+    "outcomes": [
+      {
+        "range": "≥ 10",
+        "text": "Tu plan se desarrolla con una precisión asombrosa. El enemigo es tomado completamente desprevenido.",
+        "bullets": []
+      },
+      {
+        "range": "7–9",
+        "text": "Tu estratagema funciona, pero a un precio. **Elige uno**:",
+        "bullets": [
+          "Sufres pérdidas o sacrificas posición",
+          "El enemigo aprende más sobre tu estrategia de lo que te gustaría",
+          "La maniobra te deja temporalmente vulnerable"
+        ]
+      },
+      {
+        "range": "≤ 6",
+        "text": "Tu plan colapsa:",
+        "bullets": [
+          "El enemigo anticipa tu movimiento y contraataca brutalmente",
+          "Tus fuerzas están mal posicionadas y en riesgo",
+          "El plan fractura la unidad de tu mando: estalla la lucha interna"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "adapt1",
+    "title": "Adaptable - Aprende técnicas de otros roles"
+  },
+  {
+    "id": "squads",
+    "title": "Escuadrones de Mando",
+    "description": "Comandas escuadrones de élite de tropas especializadas. Cada escuadrón puede ser personalizado con miembros y capacidades únicos. Detalla tus escuadrones a continuación.",
+    "category": "Movimientos de Mando",
+    "outcomes": [
+      {
+        "range": "",
+        "text": "Tus escuadrones son leales y efectivos. Rastrea a sus miembros, estado y capacidades en la tarjeta de escuadrón a continuación."
+      }
+    ]
+  },
+  {
+    "id": "cmdstruct",
+    "title": "Estructura de Mando",
+    "description": "Tu dominio de la jerarquía militar te permite dirigir fuerzas eficientemente en todos los niveles. Puedes usar las siguientes opciones de mando:",
+    "category": "Movimientos de Mando",
+    "submoves": [
+      {
+        "title": "Dar una Orden",
+        "description": "Cuando emites un mando directo a subordinados en combate, tira **+Influencia**.",
+        "outcomes": [
+          {
+            "range": "≥ 10",
+            "text": "Ejecutan tu orden sin fallas. Toma **+1 adelante** en cualquier acción de seguimiento.",
+            "bullets": []
+          },
+          {
+            "range": "7–9",
+            "text": "Llevan a cabo tu orden, pero elige uno:",
+            "bullets": [
+              "Tardan más de lo esperado: pierdes la iniciativa",
+              "Sufren bajas ejecutando la orden",
+              "La completan pero ahora están fuera de posición"
+            ]
+          },
+          {
+            "range": "≤ 6",
+            "text": "Tu orden es malinterpretada o ignorada:",
+            "bullets": [
+              "La confusión se extiende por las filas",
+              "Dudan en un momento crítico",
+              "Un subordinado cuestiona tu juicio abiertamente"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Coordinar Fuerzas",
+        "description": "Cuando orquestas múltiples unidades trabajando en conjunto, tira **+Pericia**.",
+        "outcomes": [
+          {
+            "range": "≥ 10",
+            "text": "Sincronización perfecta. Todas las unidades actúan como una fuerza coordinada. Elige dos:",
+            "bullets": [
+              "Maximizar ventaja táctica: los enemigos quedan atrapados en una pinza",
+              "Minimizar bajas: tus fuerzas luchan eficientemente",
+              "Crear una apertura: los aliados ganan **+1 adelante**",
+              "Asegurar una posición estratégica"
+            ]
+          },
+          {
+            "range": "7–9",
+            "text": "La coordinación se mantiene, pero no es perfecta. Elige uno de la lista anterior.",
+            "bullets": []
+          },
+          {
+            "range": "≤ 6",
+            "text": "La coordinación se rompe:",
+            "bullets": [
+              "Las unidades actúan con propósitos contradictorios, creando caos",
+              "La comunicación falla en un momento crucial",
+              "Una unidad queda aislada y vulnerable"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

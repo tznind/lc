@@ -7,6 +7,84 @@ window.JsonLoader = (function() {
     'use strict';
 
     /**
+     * Get current language (from URL parameter ?lang=, browser, or default to 'en')
+     * @returns {string} Language code (e.g., 'en', 'es', 'fr')
+     */
+    function getCurrentLanguage() {
+        // Check URL parameter first (?lang=es)
+        const params = new URLSearchParams(window.location.search);
+        const langParam = params.get('lang');
+        if (langParam) {
+            return langParam;
+        }
+
+        // Fall back to browser language (first part before -)
+        if (navigator.language) {
+            return navigator.language.split('-')[0];
+        }
+
+        // Default to English
+        return 'en';
+    }
+
+    /**
+     * Deep merge two objects recursively
+     * @param {Object} base - Base object
+     * @param {Object} override - Override object
+     * @returns {Object} Merged object
+     */
+    function deepMerge(base, override) {
+        if (!override) return base;
+        if (Array.isArray(base) && Array.isArray(override)) {
+            // For arrays, merge by index
+            return base.map((item, idx) => {
+                if (typeof item === 'object' && typeof override[idx] === 'object') {
+                    return deepMerge(item, override[idx]);
+                }
+                return override[idx] !== undefined ? override[idx] : item;
+            });
+        }
+        if (typeof base === 'object' && typeof override === 'object') {
+            const result = { ...base };
+            Object.keys(override).forEach(key => {
+                if (typeof base[key] === 'object' && typeof override[key] === 'object') {
+                    result[key] = deepMerge(base[key], override[key]);
+                } else {
+                    result[key] = override[key];
+                }
+            });
+            return result;
+        }
+        return override;
+    }
+
+    /**
+     * Merge translation data into base data by ID
+     * @param {Array} baseData - Base data (English)
+     * @param {Array} translationData - Translation data
+     * @returns {Array} Merged data with translations applied
+     */
+    function mergeTranslations(baseData, translationData) {
+        if (!translationData || !Array.isArray(translationData)) {
+            return baseData;
+        }
+
+        // Create a map of translations by ID for quick lookup
+        const translationMap = {};
+        translationData.forEach(item => {
+            if (item.id) {
+                translationMap[item.id] = item;
+            }
+        });
+
+        // Merge translations into base data
+        return baseData.map(baseItem => {
+            const translation = translationMap[baseItem.id];
+            return translation ? deepMerge(baseItem, translation) : baseItem;
+        });
+    }
+
+    /**
      * Load a JSON file and assign it to a window variable
      * @param {string} filePath - Path to the JSON file
      * @param {string} variableName - Name of the window variable to assign to
@@ -80,10 +158,37 @@ window.JsonLoader = (function() {
         }
         
         console.log(`Loading ${roleConfigs.length} move files from availability map`);
-        
+
         // Load all move files and combine them
         const loadedData = await loadMultipleJsonData(roleConfigs);
-        
+
+        // Load translations if language is not English
+        const currentLang = getCurrentLanguage();
+        if (currentLang !== 'en') {
+            console.log(`Loading translations for language: ${currentLang}`);
+
+            // Try to load translation files for each role
+            for (const config of roleConfigs) {
+                // Convert path like "data/moves/lord-commander.json" to "data/es/moves/lord-commander.json"
+                const translationPath = config.filePath.replace(/^data\//, `data/${currentLang}/`);
+
+                try {
+                    const response = await fetch(translationPath);
+                    if (response.ok) {
+                        const translationData = await response.json();
+                        // Merge translations into the loaded moves
+                        const baseMoves = window[config.variableName];
+                        window[config.variableName] = mergeTranslations(baseMoves, translationData);
+                        console.log(`Loaded translation: ${translationPath}`);
+                    } else {
+                        console.log(`Translation not found: ${translationPath} (using English)`);
+                    }
+                } catch (error) {
+                    console.log(`Translation not available: ${translationPath} (using English)`);
+                }
+            }
+        }
+
         // Combine all move arrays into a single array and normalize categories
         const allMoves = [];
         const moveSourceMap = {}; // Track which file each move comes from
