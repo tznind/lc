@@ -85,6 +85,35 @@ window.JsonLoader = (function() {
     }
 
     /**
+     * Fetch a file with translation fallback support
+     * Automatically detects if path is already translated and normalizes it
+     * Tries translated path first (data/{lang}/...), then falls back to base path (data/...)
+     * @param {string} path - File path (can be base like "data/cards/ship/card.json" or already translated like "data/es/cards/ship/card.css")
+     * @returns {Promise<Response>} Fetch response
+     */
+    async function fetchWithTranslations(path) {
+        // Normalize to base path (remove any existing language prefix)
+        const basePath = path.replace(/^data\/[a-z]{2}\//, 'data/');
+        const currentLang = getCurrentLanguage();
+
+        // If not English, try translated version first
+        if (currentLang !== 'en') {
+            const translatedPath = basePath.replace(/^data\//, `data/${currentLang}/`);
+            const response = await fetch(translatedPath);
+
+            if (response.ok) {
+                console.log(`Loaded translation: ${translatedPath}`);
+                return response;
+            }
+
+            console.log(`Translation not found: ${translatedPath} (using base)`);
+        }
+
+        // Fall back to base path (English)
+        return fetch(basePath);
+    }
+
+    /**
      * Load a JSON file and assign it to a window variable
      * @param {string} filePath - Path to the JSON file
      * @param {string} variableName - Name of the window variable to assign to
@@ -334,6 +363,8 @@ window.JsonLoader = (function() {
 
     // Public API
     return {
+        getCurrentLanguage,
+        fetchWithTranslations,
         loadJsonData,
         loadMultipleJsonData,
         loadAllRoleMoves,

@@ -1,0 +1,133 @@
+<div class="card ship-card">
+  <h3 class="card-title">Nave Estelar</h3>
+
+  <div class="card-section">
+    <div class="form-field">
+      <label for="ship_name">Nombre de la Nave:</label>
+      <input type="text" id="ship_name" name="ship_name" placeholder="Ingrese nombre de la nave">
+    </div>
+
+    <div class="form-field">
+      <label for="ship_class">Clase de Nave:</label>
+      <select id="ship_class" name="ship_class">
+        <option value="">Seleccione clase...</option>
+        <option value="frigate">Fragata</option>
+        <option value="light_cruiser">Crucero Ligero</option>
+        <option value="cruiser">Crucero</option>
+        <option value="grand_cruiser">Gran Crucero</option>
+        <option value="battleship">Acorazado</option>
+        <option value="transport">Transporte</option>
+        <option value="raider">Asaltante</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card-section">
+    <h4>Estadísticas de la Nave</h4>
+    <div class="ship-stats-grid">
+      <div class="form-field">
+        <label for="ship_speed">Velocidad:</label>
+        <input type="number" id="ship_speed" name="ship_speed" min="1" max="12" placeholder="1-12">
+      </div>
+
+      <div class="form-field">
+        <label for="ship_maneuverability">Maniobrabilidad:</label>
+        <input type="number" id="ship_maneuverability" name="ship_maneuverability" min="-30" max="30" placeholder="-30 a +30">
+      </div>
+
+      <div class="form-field">
+        <label for="ship_detection">Detección:</label>
+        <input type="number" id="ship_detection" name="ship_detection" min="1" max="50" placeholder="Puntuación de detección">
+      </div>
+
+      <div class="form-field">
+        <label for="ship_hull_integrity">Integridad del Casco:</label>
+        <input type="number" id="ship_hull_integrity" name="ship_hull_integrity" min="1" max="100" placeholder="Puntos de casco">
+      </div>
+
+      <div class="form-field">
+        <label for="ship_armour">Blindaje:</label>
+        <input type="number" id="ship_armour" name="ship_armour" min="1" max="20" placeholder="Puntuación de blindaje">
+      </div>
+
+      <div class="form-field">
+        <label for="ship_turret_rating">Puntuación de Torreta:</label>
+        <input type="number" id="ship_turret_rating" name="ship_turret_rating" min="1" max="3" placeholder="1-3">
+      </div>
+    </div>
+  </div>
+
+  <div class="card-section">
+    <h4>Componentes de la Nave</h4>
+    <div class="ship-components-grid">
+      <div class="component-category">
+        <h5>Componentes Esenciales</h5>
+        <div class="component-item">
+          <label>
+            <input type="checkbox" id="ship_plasma_drive" name="ship_plasma_drive">
+            Impulsor de Plasma
+          </label>
+        </div>
+
+        <div class="component-item">
+          <label>
+            <input type="checkbox" id="ship_void_shields" name="ship_void_shields">
+            Escudos de Vacío
+          </label>
+        </div>
+
+        <div class="component-item">
+          <label>
+            <input type="checkbox" id="ship_warp_shield" name="ship_warp_shield">
+            Escudo Disforme
+          </label>
+        </div>
+
+        <div class="component-item">
+          <label>
+            <input type="checkbox" id="ship_augur_arrays" name="ship_augur_arrays">
+            Matrices de Auspex
+          </label>
+        </div>
+      </div>
+
+      <div class="component-category">
+        <h5>Armas</h5>
+        <div class="component-item">
+          <label>
+            <input type="checkbox" id="ship_macrobatteries" name="ship_macrobatteries">
+            Macrobaterías
+          </label>
+        </div>
+
+        <div class="component-item">
+          <label>
+            <input type="checkbox" id="ship_lance_batteries" name="ship_lance_batteries">
+            Baterías Lanza
+          </label>
+        </div>
+
+        <div class="component-item">
+          <label>
+            <input type="checkbox" id="ship_torpedo_tubes" name="ship_torpedo_tubes">
+            Tubos de Torpedos
+          </label>
+        </div>
+
+        <div class="component-item">
+          <label>
+            <input type="checkbox" id="ship_nova_cannon" name="ship_nova_cannon">
+            Cañón Nova
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-section">
+    <div class="form-field">
+      <label for="ship_notes">Notas Adicionales:</label>
+      <textarea id="ship_notes" name="ship_notes" rows="3" placeholder="Historia de la nave, modificaciones, notas de la tripulación, espíritus de la máquina..."></textarea>
+    </div>
+  </div>
+</div>

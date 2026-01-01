@@ -1,0 +1,13 @@
+{
+  "id": "ship",
+  "title": "Nave Estelar",
+  "path": "data/es/cards/ship",
+  "description": "Tarjeta de seguimiento de nave estelar con estadísticas, componentes y notas",
+  "version": "1.0.0",
+  "author": "Core System",
+  "files": {
+    "html": "card.html",
+    "css": "card.css",
+    "js": "card.js"
+  }
+}

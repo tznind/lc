@@ -22,12 +22,12 @@ window.Cards = (function() {
         }
 
         try {
-            // Load card definition
-            const definitionResponse = await fetch(`data/cards/${cardId}/card.json`);
+            // Load card definition (with translation fallback)
+            const definitionResponse = await window.JsonLoader.fetchWithTranslations(`data/cards/${cardId}/card.json`);
             if (!definitionResponse.ok) {
                 throw new Error(`Failed to load card definition: ${cardId}`);
             }
-            
+
             const cardDef = await definitionResponse.json();
             
             // Load HTML content
@@ -88,22 +88,23 @@ window.Cards = (function() {
 
     /**
      * Load and inject card CSS
-     * @param {string} cardPath - Path to the card folder
+     * @param {string} cardPath - Path to the card folder (may be translated)
      * @param {string} cssFile - CSS filename
      * @param {string} cardId - Card ID for tracking
      */
     async function loadCardCSS(cardPath, cssFile, cardId) {
         try {
-            const response = await fetch(`${cardPath}/${cssFile}`);
+            // Use fetchWithTranslations for automatic fallback
+            const response = await window.JsonLoader.fetchWithTranslations(`${cardPath}/${cssFile}`);
             if (response.ok) {
                 const css = await response.text();
-                
+
                 // Create and inject style element
                 const style = document.createElement('style');
                 style.setAttribute('data-card', cardId);
                 style.textContent = css;
                 document.head.appendChild(style);
-                
+
                 loadedStyles.add(cardId);
                 console.log(`Loaded CSS for card: ${cardId}`);
             }
@@ -120,21 +121,19 @@ window.Cards = (function() {
      */
     async function loadCardScript(cardPath, jsFile, cardId) {
         try {
-            const response = await fetch(`${cardPath}/${jsFile}`);
+            // Use fetchWithTranslations to get the right file with fallback
+            const response = await window.JsonLoader.fetchWithTranslations(`${cardPath}/${jsFile}`);
             if (response.ok) {
-                // Wait for script to load AND execute before continuing
-                await new Promise((resolve, reject) => {
-                    const script = document.createElement('script');
-                    script.setAttribute('data-card', cardId);
-                    script.src = `${cardPath}/${jsFile}`;
-                    script.onload = () => {
-                        loadedScripts.add(cardId);
-                        console.log(`Loaded script for card: ${cardId}`);
-                        resolve();
-                    };
-                    script.onerror = () => reject(new Error(`Failed to load script: ${jsFile}`));
-                    document.head.appendChild(script);
-                });
+                const jsContent = await response.text();
+
+                // Create and execute inline script (avoids double-fetch)
+                const script = document.createElement('script');
+                script.setAttribute('data-card', cardId);
+                script.textContent = jsContent;
+                document.head.appendChild(script);
+
+                loadedScripts.add(cardId);
+                console.log(`Loaded script for card: ${cardId}`);
             }
         } catch (error) {
             console.warn(`Failed to load script for card ${cardId}:`, error);
