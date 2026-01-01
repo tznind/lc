@@ -137,15 +137,16 @@ window.JsonLoader = (function() {
      * Load a JSON file with optional translation support
      * @param {string} filePath - Path to the base JSON file
      * @param {string} variableName - Name of the window variable to assign to
+     * @param {boolean} mergeById - If true, merge arrays by ID; if false, replace entirely (default: true)
      * @returns {Promise} Promise that resolves when the JSON is loaded (with translations if available)
      */
-    async function loadJsonDataWithTranslations(filePath, variableName) {
+    async function loadJsonDataWithTranslations(filePath, variableName, mergeById = true) {
         // Load base data first
         let data = await loadJsonData(filePath, variableName);
 
         // Load translations if language is not English
         const currentLang = getCurrentLanguage();
-        if (currentLang !== 'en' && Array.isArray(data)) {
+        if (currentLang !== 'en') {
             // Convert path like "data/stats.json" to "data/es/stats.json"
             const translationPath = filePath.replace(/^data\//, `data/${currentLang}/`);
 
@@ -153,8 +154,14 @@ window.JsonLoader = (function() {
                 const response = await fetch(translationPath);
                 if (response.ok) {
                     const translationData = await response.json();
-                    // Merge translations into base data
-                    data = mergeTranslations(data, translationData);
+
+                    // Merge by ID or replace entirely based on parameter
+                    if (mergeById && Array.isArray(data) && Array.isArray(translationData)) {
+                        data = mergeTranslations(data, translationData);
+                    } else {
+                        data = translationData;
+                    }
+
                     window[variableName] = data;
                     console.log(`Loaded translation: ${translationPath}`);
                 } else {
@@ -281,44 +288,44 @@ window.JsonLoader = (function() {
     }
 
     /**
-     * Load stats configuration (with translations)
+     * Load stats configuration (with translations - merge by ID)
      * @returns {Promise} Promise that resolves when stats data is loaded
      */
     async function loadStatsData() {
-        return loadJsonDataWithTranslations('data/stats.json', 'hexStats');
+        return loadJsonDataWithTranslations('data/stats.json', 'hexStats', true);
     }
 
     /**
-     * Load role availability map
+     * Load role availability map (with translation support - complete replacement)
      * @returns {Promise} Promise that resolves when availability map is loaded
      */
     async function loadAvailabilityMap() {
-        return loadJsonData('data/availability.json', 'availableMap');
+        return loadJsonDataWithTranslations('data/availability.json', 'availableMap', false);
     }
 
     /**
-     * Load categories configuration
+     * Load categories configuration (with translation support - complete replacement)
      * @returns {Promise} Promise that resolves when categories data is loaded
      */
     async function loadCategoriesData() {
-        return loadJsonData('data/categories.json', 'categoriesConfig');
+        return loadJsonDataWithTranslations('data/categories.json', 'categoriesConfig', false);
     }
 
     /**
-     * Load terms glossary
+     * Load terms glossary (with translation support - complete replacement)
      * @returns {Promise} Promise that resolves when terms data is loaded
      */
     async function loadTermsData() {
-        return loadJsonData('data/terms.json', 'termsGlossary');
+        return loadJsonDataWithTranslations('data/terms.json', 'termsGlossary', false);
     }
 
     /**
-     * Load aliases configuration (optional - gracefully handles missing file)
+     * Load aliases configuration (optional - gracefully handles missing file, with translation support)
      * @returns {Promise} Promise that resolves when aliases data is loaded
      */
     async function loadAliasesData() {
         try {
-            return await loadJsonData('data/aliases.json', 'aliasesConfig');
+            return await loadJsonDataWithTranslations('data/aliases.json', 'aliasesConfig', false);
         } catch (error) {
             console.warn('Aliases file not found, using empty aliases');
             window.aliasesConfig = [];
