@@ -1,0 +1,53 @@
+{
+  "Lord Commander": {
+    "name": "Señor Comandante",
+    "_movesFile": "data/moves/lord-commander.json",
+    "description": "Líder militar supremo que comanda flotas, ejércitos y coordina operaciones estratégicas a gran escala.",
+    "cards": ["ship", "dribble"],
+    "l1a2b3": true,
+    "l4c5d6": false,
+    "l7e8f9": true,
+    "lc001": false,
+    "adapt1": false,
+    "versatile": false,
+    "squads": true,
+    "dribbles": true,
+    "inspire1": false,
+    "is": false,
+    "battlehard": false,
+    "cmdstruct": false
+  },
+  "Navigator": {
+    "name": "Navegante",
+    "_movesFile": "data/moves/navigator.json",
+    "description": "Experto en trazar rutas a través del espacio desconocido y navegar fenómenos estelares peligrosos.\n\nLos Navegantes poseen un **tercer ojo** que les permite *percibir la disformidad* y guiar naves a través del inmaterium.",
+    "cards": [],
+    "a1b2c3": true,
+    "d4e5f6": false,
+    "g7h8i9": true,
+    "1587dd": false,
+    "nav001": false,
+    "nav-ship": true,
+    "is": false
+  },
+  "Mech Adept": {
+    "name": "Adepto Mecánico",
+    "_movesFile": "data/moves/mech-adept.json",
+    "description": "Sacerdote de la máquina que comulga con espíritus de la máquina y realiza ritos sagrados de reparación.",
+    "cards": ["robotic-companion"],
+    "m1n2o3": true,
+    "p4q5r6": false,
+    "ma001": false,
+    "mechrites": true,
+    "is": false
+  },
+  "Dribbles": {
+    "name": "Dribbles",
+    "_movesFile": "data/moves/dribbles.json",
+    "cards": ["dribble"]
+  },
+  "Everyone": {
+    "name": "Todos",
+    "_movesFile": "data/moves/everyone.json"
+  }
+}

@@ -113,7 +113,8 @@
             rolesToAdd.forEach(role => {
                 const option = document.createElement('option');
                 option.value = role;
-                option.textContent = role;
+                // Use 'name' field if present, otherwise use role key (backwards compatible)
+                option.textContent = window.availableMap[role].name || role;
                 selector.appendChild(option);
             });
         });

@@ -2,6 +2,7 @@
   {
     "id": "l1a2b3",
     "title": "Reunir a la Cohorte (+Influencia)",
+    "category": "Movimientos",
     "outcomes": [
       {
         "range": "≥ 10",
@@ -61,7 +62,8 @@
   },
   {
     "id": "adapt1",
-    "title": "Adaptable - Aprende técnicas de otros roles"
+    "title": "Adaptable - Aprende técnicas de otros roles",
+    "category": "Movimientos"
   },
   {
     "id": "squads",
