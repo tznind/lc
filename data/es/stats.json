@@ -1,0 +1,46 @@
+[
+  {
+    "id": "mettle",
+    "title": "TEMPLE",
+    "tracks": [
+      {
+        "name": "Armadura"
+      }
+    ]
+  },
+  {
+    "id": "physique",
+    "title": "FÍSICO",
+    "tracks": [
+      {
+        "name": "Heridas"
+      }
+    ]
+  },
+  {
+    "id": "influence",
+    "title": "INFLUENCIA"
+  },
+  {
+    "id": "expertise",
+    "title": "PERICIA"
+  },
+  {
+    "id": "conviction",
+    "title": "CONVICCIÓN"
+  },
+  {
+    "id": "armourhp",
+    "title": "Armadura,Vida"
+  },
+  {
+    "id": "prophecy",
+    "title": "PROFECÍA",
+    "tracks": [
+      {
+        "name": "Señales",
+        "endLabel": "condenado"
+      }
+    ]
+  }
+]

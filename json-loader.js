@@ -95,13 +95,13 @@ window.JsonLoader = (function() {
         if (location.protocol === 'file:') {
             throw new Error(`Cannot use fetch with file:// protocol for ${filePath}. Use embedded data instead.`);
         }
-        
+
         try {
             const response = await fetch(filePath);
             if (!response.ok) {
                 throw new Error(`Failed to load ${filePath}: ${response.status} ${response.statusText}`);
             }
-            
+
             const data = await response.json();
             window[variableName] = data;
             console.log(`Loaded ${variableName} from ${filePath}:`, data.length || 'object', typeof data === 'object' ? 'loaded' : 'items');
@@ -110,6 +110,41 @@ window.JsonLoader = (function() {
             console.error(`Error loading ${filePath}:`, error);
             throw error;
         }
+    }
+
+    /**
+     * Load a JSON file with optional translation support
+     * @param {string} filePath - Path to the base JSON file
+     * @param {string} variableName - Name of the window variable to assign to
+     * @returns {Promise} Promise that resolves when the JSON is loaded (with translations if available)
+     */
+    async function loadJsonDataWithTranslations(filePath, variableName) {
+        // Load base data first
+        let data = await loadJsonData(filePath, variableName);
+
+        // Load translations if language is not English
+        const currentLang = getCurrentLanguage();
+        if (currentLang !== 'en' && Array.isArray(data)) {
+            // Convert path like "data/stats.json" to "data/es/stats.json"
+            const translationPath = filePath.replace(/^data\//, `data/${currentLang}/`);
+
+            try {
+                const response = await fetch(translationPath);
+                if (response.ok) {
+                    const translationData = await response.json();
+                    // Merge translations into base data
+                    data = mergeTranslations(data, translationData);
+                    window[variableName] = data;
+                    console.log(`Loaded translation: ${translationPath}`);
+                } else {
+                    console.log(`Translation not found: ${translationPath} (using English)`);
+                }
+            } catch (error) {
+                console.log(`Translation not available: ${translationPath} (using English)`);
+            }
+        }
+
+        return data;
     }
 
     /**
@@ -225,11 +260,11 @@ window.JsonLoader = (function() {
     }
 
     /**
-     * Load stats configuration
+     * Load stats configuration (with translations)
      * @returns {Promise} Promise that resolves when stats data is loaded
      */
     async function loadStatsData() {
-        return loadJsonData('data/stats.json', 'hexStats');
+        return loadJsonDataWithTranslations('data/stats.json', 'hexStats');
     }
 
     /**
