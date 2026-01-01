@@ -7,24 +7,16 @@ window.JsonLoader = (function() {
     'use strict';
 
     /**
-     * Get current language (from URL parameter ?lang=, browser, or default to 'en')
+     * Get current language (from URL parameter ?lang= or default to 'en')
      * @returns {string} Language code (e.g., 'en', 'es', 'fr')
      */
     function getCurrentLanguage() {
-        // Check URL parameter first (?lang=es)
+        // Check URL parameter (?lang=es)
         const params = new URLSearchParams(window.location.search);
         const langParam = params.get('lang');
-        if (langParam) {
-            return langParam;
-        }
 
-        // Fall back to browser language (first part before -)
-        if (navigator.language) {
-            return navigator.language.split('-')[0];
-        }
-
-        // Default to English
-        return 'en';
+        // Return language from URL or default to English
+        return langParam || 'en';
     }
 
     /**

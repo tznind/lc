@@ -32,6 +32,7 @@ All changes can be acomplished by modifying the [data](./data) directory and/or 
   - [Moves That Grant Cards](#moves-that-grant-cards)
 - [Cards System](#cards-system)
   - [Everyone System - Universal Cards and Moves](#everyone-system---universal-cards-and-moves)
+- [Multi-Language Support](#multi-language-support)
 - [Validation and Error Detection](#validation-and-error-detection)
 
 ---
@@ -1513,6 +1514,67 @@ data/
 - **Persistence Compatible**: All card inputs work with URL persistence and "Copy URL"
 - **Clear Button**: The "Clear" button removes all card data along with other form data
 - **Development Mode**: Use `window.Cards.clearCache()` to reload cards during development
+
+---
+
+## Multi-Language Support
+
+The system supports translations for moves, stats, and cards with automatic fallback to English.
+
+### Language Selection
+
+Set language via URL parameter: `cs.html?lang=es` (Spanish), `cs.html?lang=fr` (French), etc.
+Default: English (`en`)
+
+### Translation Files
+
+Create translations by mirroring the `data/` structure with a language prefix:
+
+```
+data/
+  ├── moves/lord-commander.json      (English - base)
+  ├── stats.json                     (English - base)
+  ├── cards/ship/                    (English - base)
+  └── es/                            (Spanish translations)
+      ├── moves/lord-commander.json  (Spanish overlay)
+      ├── stats.json                 (Spanish overlay)
+      └── cards/ship/                (Spanish card folder)
+```
+
+### Translation Behavior
+
+**Moves & Stats** (JSON merging):
+- Translation overlays onto English base by matching `id` fields
+- Missing translations fall back to English
+- Only translate what changes (title, description, outcomes, etc.)
+
+**Cards** (folder replacement):
+- Complete card folder with translated HTML
+- CSS/JS automatically fall back to English if not provided
+- Same IDs required for form compatibility
+
+> **Important**
+> Language codes must be exactly **2 lowercase letters** (e.g., `es`, `fr`, `de`).
+> Regional variants like `en-US` or `pt-BR` are not currently supported.
+
+### Example Translation
+
+Spanish move (only translate what changes):
+```json
+[
+  {
+    "id": "l1a2b3",
+    "title": "Reunir a la Cohorte (+Influencia)",
+    "outcomes": [
+      {
+        "range": "≥ 10",
+        "text": "Tu voz atraviesa el estruendo de la batalla...",
+        "bullets": []
+      }
+    ]
+  }
+]
+```
 
 ---
 
