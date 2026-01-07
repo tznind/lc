@@ -27,6 +27,11 @@
         "range": "≤ 6",
         "text": "Your enemy __enemyname:Enemy Name__ has the upper hand and demands __demand:Their demand__."
       }
+    ],
+    "pickOne": [
+      "You have a dark secret __ttscr__",
+      "You have a forbidden love __lov__"
     ]
+
   }
 ]
