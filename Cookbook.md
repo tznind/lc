@@ -333,6 +333,7 @@ All text fields in moves and role descriptions support basic markdown-style form
 - *Italic text:* Wrap text in single asterisks: `*italic text*`
 - **Bullet lists:** Start lines with `- ` (dash and space) for bulleted lists
 - **Line breaks:** Use `\n` for a line break or `\n\n` for a paragraph break
+- **Text input boxes:** Use `__id__` or `__id:placeholder__` syntax to create inline text input boxes
 - **Glossary terms:** Any word in bold or italic that matches a term in `data/terms.json` becomes clickable with a popup definition
 
 ### Bullet Lists
@@ -346,6 +347,57 @@ Consecutive lines starting with `- ` are automatically converted to HTML bullet 
 ```
 
 Renders as a proper bulleted list with the "Debility" term clickable.
+
+### Text Input Boxes
+
+You can insert inline text input boxes anywhere in your text using the `__id__` syntax. The id between the underscores becomes the input element's id attribute, making it easy to reference later.
+
+**Syntax:**
+```
+__id__                    # Basic text box without placeholder
+__id:Placeholder Text__   # Text box with placeholder text (optional)
+```
+
+**Example in a move:**
+```json
+{
+  "id": "gather-intel",
+  "title": "Gather Intel",
+  "description": "Your second in command __cmdname:Name__ is a real piece of work",
+  "outcomes": [
+    {
+      "range": "≥ 10",
+      "text": "The navigation officer __navname:Officer Name__ knows your secret __navsecret__"
+    }
+  ]
+}
+```
+
+This creates three inline text inputs:
+- `<input id="cmdname" placeholder="Name">` - for the commander's name with placeholder
+- `<input id="navname" placeholder="Officer Name">` - for the navigator's name with placeholder
+- `<input id="navsecret">` - for the secret without placeholder
+
+**Rendered output:**
+```
+Your second in command [Name        ] is a real piece of work
+The navigation officer [Officer Name] knows your secret [        ]
+```
+(The grayed-out text in brackets represents placeholder text that disappears when you type)
+
+The text boxes:
+- Don't break the line flow (they're inline)
+- Have a subtle style to distinguish them from regular text
+- Can be filled in by players during the game
+- Each has a unique, deterministic id based on what you specify
+
+**Use cases:**
+- Player character names: `__pcname:Character Name__`
+- NPC names: `__npcname:NPC Name__`, `__villain:Villain Name__`
+- Location names: `__hometown:Location__`, `__planet:Planet Name__`
+- Custom details: `__secret:Their Secret__`, `__weakness__`, `__desire:What they want__`
+- Relationship details: `__bond:Type of bond__`, `__debt:What is owed__`
+- Numbers and stats: `__damage:0__`, `__armor:0__`
 
 ### Glossary Terms
 

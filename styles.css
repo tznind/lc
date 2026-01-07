@@ -186,6 +186,35 @@ body.hide-help .move-reference {
   cursor: default;
 }
 
+/* === FORMAT TEXT INPUT BOXES === */
+.format-text-input {
+  display: inline-block;
+  min-width: 60px;
+  max-width: 200px;
+  height: 1.2em !important;
+  padding: 0 4px !important;
+  margin: 0 2px;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 1.2 !important;
+  vertical-align: baseline;
+  border: 1px solid #d1d5db;
+  border-radius: 3px;
+  background-color: #f9fafb;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.format-text-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background-color: #ffffff;
+}
+
+.format-text-input::placeholder {
+  color: #9ca3af;
+  font-style: italic;
+}
+
 /* === BURGER MENU BUTTON === */
 .burger-menu {
   font-size: 1.5em;

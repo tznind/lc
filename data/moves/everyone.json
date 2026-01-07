@@ -9,5 +9,24 @@
         "text": "This move is always available to demonstrate how the Everyone system works."
       }
     ]
+  },
+  {
+    "id": "test-textbox",
+    "title": "Test Text Box Feature",
+    "description": "Your second in command __cmdname:Name__ is a real piece of work. The navigation officer __navname:Officer Name__ knows your secret __navsecret__.",
+    "outcomes": [
+      {
+        "range": "≥ 10",
+        "text": "You trust __allyname:Ally's Name__ with your life and would give them __gift:What you'd give__ without hesitation."
+      },
+      {
+        "range": "7-9",
+        "text": "You're not sure about __suspectname:Suspect__ anymore. They did __suspectdeed:What they did__."
+      },
+      {
+        "range": "≤ 6",
+        "text": "Your enemy __enemyname:Enemy Name__ has the upper hand and demands __demand:Their demand__."
+      }
+    ]
   }
 ]
