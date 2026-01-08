@@ -641,28 +641,18 @@ window.MovesCore = (function() {
             });
         }
 
-        // Add submoves if they exist
-        if (move.submoves && Array.isArray(move.submoves) && move.submoves.length > 0) {
-            move.submoves.forEach(submove => {
-                if (submove) {
-                    const submoveElement = createSubmove(submove);
-                    contentContainer.appendChild(submoveElement);
-                }
-            });
-        }
-
         // Add pickOne options if they exist (render first as they're typically more fundamental)
         if (move.pickOne && Array.isArray(move.pickOne) && move.pickOne.length > 0) {
             const pickOneElement = createPickOneOptions(move, urlParams);
             contentContainer.appendChild(pickOneElement);
         }
-        
+
         // Add pick options if they exist (render after pickOne as they're typically add-on features)
         if (move.pick && Array.isArray(move.pick) && move.pick.length > 0) {
             const pickElement = createPickOptions(move, urlParams);
             contentContainer.appendChild(pickElement);
         }
-        
+
         // Add takeFrom section if it exists
         if (move.takeFrom && Array.isArray(move.takeFrom) && move.takeFrom.length > 0) {
             if (window.TakeFrom) {
@@ -670,7 +660,7 @@ window.MovesCore = (function() {
                 contentContainer.appendChild(takeFromSection);
             }
         }
-        
+
         // Add granted card section if move grants a card
         if (move.grantsCard) {
             console.log(`renderMove: Move ${move.id} has grantsCard: ${move.grantsCard}`);
@@ -681,11 +671,21 @@ window.MovesCore = (function() {
                 console.warn(`renderMove: createGrantedCardSection returned null for move ${move.id}`);
             }
         }
-        
+
         // Add details input if specified
         if (move.details) {
             const detailsElement = createDetailsInput(move, urlParams);
             contentContainer.appendChild(detailsElement);
+        }
+
+        // Add submoves if they exist (at the end)
+        if (move.submoves && Array.isArray(move.submoves) && move.submoves.length > 0) {
+            move.submoves.forEach(submove => {
+                if (submove) {
+                    const submoveElement = createSubmove(submove);
+                    contentContainer.appendChild(submoveElement);
+                }
+            });
         }
         
         // Append content container to move div
