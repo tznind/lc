@@ -237,7 +237,7 @@ window.MovesCore = (function() {
     /**
      * Create submove section
      */
-    function createSubmove(submove) {
+    function createSubmove(submove, moveId, submoveIndex, urlParams) {
         const submoveDiv = document.createElement("div");
         submoveDiv.className = "submove";
 
@@ -265,6 +265,28 @@ window.MovesCore = (function() {
                     submoveDiv.appendChild(outcomeElement);
                 }
             });
+        }
+
+        // Create a submove object with modified ID for unique checkbox/radio IDs
+        const submoveWithId = {
+            ...submove,
+            id: `${moveId}_s${submoveIndex}`
+        };
+
+        // Submove pickOne options (if they exist)
+        if (submove.pickOne && Array.isArray(submove.pickOne) && submove.pickOne.length > 0) {
+            const pickOneElement = createPickOneOptions(submoveWithId, urlParams);
+            if (pickOneElement) {
+                submoveDiv.appendChild(pickOneElement);
+            }
+        }
+
+        // Submove pick options (if they exist)
+        if (submove.pick && Array.isArray(submove.pick) && submove.pick.length > 0) {
+            const pickElement = createPickOptions(submoveWithId, urlParams);
+            if (pickElement) {
+                submoveDiv.appendChild(pickElement);
+            }
         }
 
         return submoveDiv;
@@ -680,9 +702,9 @@ window.MovesCore = (function() {
 
         // Add submoves if they exist (at the end)
         if (move.submoves && Array.isArray(move.submoves) && move.submoves.length > 0) {
-            move.submoves.forEach(submove => {
+            move.submoves.forEach((submove, index) => {
                 if (submove) {
-                    const submoveElement = createSubmove(submove);
+                    const submoveElement = createSubmove(submove, move.id, index, urlParams);
                     contentContainer.appendChild(submoveElement);
                 }
             });
