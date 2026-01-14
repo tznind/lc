@@ -58,7 +58,7 @@ window.JsonLoader = (function() {
     }
 
     /**
-     * Load modules configuration from data/modules.json
+     * Load modules configuration from data/modules.json (with translation support)
      * @returns {Promise<Object>} Modules configuration object
      */
     async function loadModulesConfig() {
@@ -67,7 +67,7 @@ window.JsonLoader = (function() {
         }
 
         try {
-            const response = await fetchWithRetry('data/modules.json');
+            const response = await fetchWithTranslations('data/modules.json');
             if (response.ok) {
                 modulesConfig = await response.json();
                 console.log('Loaded modules config:', modulesConfig);
