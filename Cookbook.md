@@ -719,7 +719,8 @@ This creates a dropdown showing all Equipment moves (Weapon, Armor, Vehicle, etc
 - Array-valued properties shared by both the root and the branch (`submoves`, `outcomes`, `pick`, `pickOne`, ...) are concatenated - root items first, then the branch's - so a branch can add to what's already there instead of replacing it
 - A non-empty `description` on both sides is likewise concatenated (with a space) rather than replaced
 - Every other property (including one present on only one side) is replaced verbatim by the branch
-- Supported conditions: `hasMove: "<id>"` (character already has that move) and `hasAnyMove: ["<id>", ...]` (character has any one of the listed moves) - "has" means checked/taken or a default move for one of their current roles (not counting moves picked up via someone else's `takeFrom`)
+- Supported conditions: `hasMove: "<id>"` (character already has that move), `hasAnyMove: ["<id>", ...]` (character has any one of the listed moves) - "has" means checked/taken or a default move for one of their current roles (not counting moves picked up via someone else's `takeFrom`) - and `hasGetParam: "<key>=<value>"` (the page's current URL query string has that exact key/value, e.g. `"move_wm001_pickone=2"`)
+- `hasGetParam` is read live off the URL at render time, so it can go stale if something else on the page changes that param without a reload/re-render - not a concern for the other conditions, which are always re-evaluated fresh
 - Only affects the move's own root properties - not evaluated inside submoves
 
 ### Move Categories

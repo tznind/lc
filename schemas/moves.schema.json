@@ -20,7 +20,7 @@
           "properties": {
             "condition": {
               "type": "object",
-              "description": "Condition to test. Currently supports 'hasMove' and 'hasAnyMove'.",
+              "description": "Condition to test. Currently supports 'hasMove', 'hasAnyMove', and 'hasGetParam'.",
               "properties": {
                 "hasMove": {
                   "type": "string",
@@ -32,6 +32,11 @@
                   "items": {
                     "type": "string"
                   }
+                },
+                "hasGetParam": {
+                  "type": "string",
+                  "description": "True if the page's current URL query string has this exact 'key=value' pair (e.g. 'move_wm001_pickone=2'). Read live from the URL, so it only reflects the state as of the last page load/render - it won't update until the page is reloaded.",
+                  "pattern": "^[^=]+=.*$"
                 }
               },
               "additionalProperties": false

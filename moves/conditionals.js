@@ -30,9 +30,28 @@ window.MoveConditionals = (function() {
     }
 
     /**
+     * True if the current query string has "key=value" exactly as given in `param`
+     * (e.g. "move_wm001_pickone=2"). Read live off location.search, so it reflects
+     * whatever's in the URL right now - stale until the page is next reloaded/re-rendered,
+     * same as everything else this module resolves against.
+     */
+    function hasGetParam(param) {
+        const eqIndex = param.indexOf('=');
+        if (eqIndex === -1) {
+            console.warn('MoveConditionals: hasGetParam expects "key=value"', param);
+            return false;
+        }
+        const key = param.slice(0, eqIndex);
+        const expectedValue = param.slice(eqIndex + 1);
+        const urlParams = new URLSearchParams(location.search);
+        return urlParams.get(key) === expectedValue;
+    }
+
+    /**
      * Evaluate a single condition object. Currently supports:
      * - { hasMove: "<moveId>" } - true if the character has that move
      * - { hasAnyMove: ["<moveId>", ...] } - true if the character has any move in the list
+     * - { hasGetParam: "<key>=<value>" } - true if the URL query string has that key/value
      */
     function evaluateCondition(condition) {
         if (!condition) return false;
@@ -43,6 +62,10 @@ window.MoveConditionals = (function() {
 
         if (condition.hasAnyMove) {
             return condition.hasAnyMove.some(moveId => hasMove(moveId));
+        }
+
+        if (condition.hasGetParam) {
+            return hasGetParam(condition.hasGetParam);
         }
 
         console.warn('MoveConditionals: Unknown condition', condition);
