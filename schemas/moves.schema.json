@@ -141,6 +141,14 @@
           "examples": ["Moves", "Equipment", "Advancement"]
         }
       },
+      "takeMoves": {
+        "type": "array",
+        "description": "Optional array of specific move IDs to restrict takeFrom to. Only moves whose id is in this list will be shown (in addition to any other takeFrom filtering). Useful for granting a specific move with flavour text rather than letting the player pick from a whole role/category.",
+        "items": {
+          "type": "string",
+          "examples": ["battlehard"]
+        }
+      },
       "takeFromAllowsDuplicates": {
         "type": "boolean",
         "description": "If true, allows selecting the same move multiple times from takeFrom. Each selection gets a unique ID suffix to prevent conflicts. Also disables filtering of moves already possessed by current roles. Default is false for backwards compatibility.",

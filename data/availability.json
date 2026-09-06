@@ -9,7 +9,8 @@
     "1587dd": false,
     "nav001": false,
     "nav-ship": true,
-    "is": false
+    "is": false,
+    "nav-bh":false
   },
   "Mech Adept": {
     "_movesFile": "data/moves/mech-adept.json",

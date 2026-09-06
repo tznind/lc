@@ -238,15 +238,19 @@ window.TakeFrom = (function() {
      */
     function handleRoleChange(roleSelect, moveSelect, moveId, instance = 1) {
         updateMoveOptions(roleSelect, moveSelect, moveId, instance);
-        // Clear move selection when role changes
-        moveSelect.value = '';
-        
-        // Clear the learned move display for this instance
+
+        // Clear move selection when role changes, unless updateMoveOptions just
+        // preselected the only remaining option (see the moveSelect.options.length === 2 check there)
+        if (moveSelect.options.length > 2) {
+            moveSelect.value = '';
+        }
+
+        // Update the learned move display for this instance (clears it, or shows the preselected move)
         const learnedMoveContainer = document.getElementById(`learned_move_${moveId}_${instance}`);
         if (learnedMoveContainer) {
-            learnedMoveContainer.innerHTML = '';
+            updateLearnedMoveDisplay(moveSelect, learnedMoveContainer, new URLSearchParams(location.search));
         }
-        
+
         handleSelectionChangeQuiet(roleSelect, moveSelect, moveId, instance);
         updateURL(roleSelect, moveSelect);
     }
@@ -400,9 +404,10 @@ window.TakeFrom = (function() {
         if (selectedRole && window.availableMap && window.availableMap[selectedRole]) {
             moveSelect.disabled = false;
 
-            // Get the source move to check for takeCategory filter and allowDuplicates
+            // Get the source move to check for takeCategory/takeMoves filters and allowDuplicates
             const sourceMove = window.moves && window.moves.find(m => m.id === moveId);
             const takeCategoryFilter = sourceMove && sourceMove.takeCategory ? sourceMove.takeCategory : null;
+            const takeMovesFilter = sourceMove && sourceMove.takeMoves ? sourceMove.takeMoves : null;
             const allowDuplicates = sourceMove && sourceMove.takeFromAllowsDuplicates === true;
 
             // Get available moves for selected role and current roles
@@ -453,6 +458,13 @@ window.TakeFrom = (function() {
                     }
                 }
 
+                // Apply specific-move filtering if takeMoves is specified
+                if (takeMovesFilter && Array.isArray(takeMovesFilter) && takeMovesFilter.length > 0) {
+                    if (!takeMovesFilter.includes(move.id)) {
+                        return; // Skip this move as it's not in the allowed move list
+                    }
+                }
+
                 // This move passed all filters - add it to the dropdown
                 const option = document.createElement("option");
                 option.value = move.id;
@@ -464,6 +476,11 @@ window.TakeFrom = (function() {
             // Restore the previously selected value if it's still available
             if (currentValue && moveSelect.querySelector(`option[value="${currentValue}"]`)) {
                 moveSelect.value = currentValue;
+            }
+
+            // If filtering (takeCategory/takeMoves) leaves exactly one move, preselect it
+            if (moveSelect.options.length === 2) {
+                moveSelect.value = moveSelect.options[1].value;
             }
         } else {
             moveSelect.disabled = true;

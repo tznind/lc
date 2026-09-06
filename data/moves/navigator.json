@@ -133,5 +133,12 @@
     "title": "Starship Command",
     "description": "As a senior officer, you have been granted command of your own starship.",
     "grantsCard": "ship"
+  },
+  {
+    "id":"nav-bh",
+    "title": "Battlehardeneder",
+    "description": "You gain the **Battle Hard** move.  If you have it instead add the following extra options:",
+    "takeFrom": ["Lord Commander"],
+    "takeMoves":["battlehard"]
   }
 ]

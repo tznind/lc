@@ -645,6 +645,8 @@ Beyond basic roll-based moves, the system supports several specialized move type
 - Creates dropdown menus populated with moves from those roles
 - Allows character versatility and cross-class abilities
 - By default, filters out moves you already have from current roles
+- Optional `takeMoves` restricts the dropdown to specific move IDs (e.g. `"takeMoves": ["battlehard"]`) - handy for granting one specific move with its own flavour text instead of a whole role/category
+- If filtering (via `takeCategory`, `takeMoves`, or just a role with one eligible move) leaves only one option, it's preselected automatically - same as the role dropdown when only one role qualifies
 
 **Allow Duplicates:**
 
