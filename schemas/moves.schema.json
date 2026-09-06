@@ -14,17 +14,24 @@
       },
       "if": {
         "type": "array",
-        "description": "Optional array of conditional rules, evaluated in order at render time. Each rule's 'condition' is checked; the matching branch ('then' if true, 'else' if false) has its properties merged verbatim into the move's root, overriding any same-named property (later rules win on conflicts). Only used to vary a move's own properties (e.g. outcomes, takeFrom) based on character state - not applied within submoves.",
+        "description": "Optional array of conditional rules, evaluated in order at render time. Each rule's 'condition' is checked; the matching branch ('then' if true, 'else' if false) has its properties merged into the move's root (later rules win on conflicts). A property that's an array on both the root and the branch (e.g. submoves, outcomes, pick) is concatenated - root items first, then the branch's. A non-empty 'description' on both sides is concatenated with a space. Any other property (including one present on only one side) is replaced verbatim by the branch. Only used to vary a move's own properties based on character state - not applied within submoves.",
         "items": {
           "type": "object",
           "properties": {
             "condition": {
               "type": "object",
-              "description": "Condition to test. Currently supports 'hasMove'.",
+              "description": "Condition to test. Currently supports 'hasMove' and 'hasAnyMove'.",
               "properties": {
                 "hasMove": {
                   "type": "string",
-                  "description": "True if the character already has the move with this ID natively from one of their current roles."
+                  "description": "True if the character already has the move with this ID - either it's checked/taken, or it's a default move for one of their current roles."
+                },
+                "hasAnyMove": {
+                  "type": "array",
+                  "description": "True if the character already has any one of these move IDs (same check as 'hasMove', applied to each).",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               },
               "additionalProperties": false

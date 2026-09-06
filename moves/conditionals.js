@@ -30,7 +30,9 @@ window.MoveConditionals = (function() {
     }
 
     /**
-     * Evaluate a single condition object. Currently only supports { hasMove: "<moveId>" }.
+     * Evaluate a single condition object. Currently supports:
+     * - { hasMove: "<moveId>" } - true if the character has that move
+     * - { hasAnyMove: ["<moveId>", ...] } - true if the character has any move in the list
      */
     function evaluateCondition(condition) {
         if (!condition) return false;
@@ -39,13 +41,38 @@ window.MoveConditionals = (function() {
             return hasMove(condition.hasMove);
         }
 
+        if (condition.hasAnyMove) {
+            return condition.hasAnyMove.some(moveId => hasMove(moveId));
+        }
+
         console.warn('MoveConditionals: Unknown condition', condition);
         return false;
     }
 
     /**
+     * Merge a then/else branch into the resolved move. A key present on both sides as
+     * an array (submoves, outcomes, pick, pickOne, ...) is concatenated - root items
+     * first, then the branch's. 'description' present (non-empty) on both sides is
+     * concatenated with a space instead. Any other key (including an array or
+     * description present on only one side) is replaced verbatim by the branch.
+     */
+    function mergeBranch(resolved, branch) {
+        const merged = { ...resolved };
+        Object.keys(branch).forEach(key => {
+            if (Array.isArray(merged[key]) && Array.isArray(branch[key])) {
+                merged[key] = [...merged[key], ...branch[key]];
+            } else if (key === 'description' && merged.description && branch.description) {
+                merged.description = `${merged.description} ${branch.description}`;
+            } else {
+                merged[key] = branch[key];
+            }
+        });
+        return merged;
+    }
+
+    /**
      * Resolve a move's "if" rules (if any) into a new move object with the matching
-     * then/else branch of each rule merged (shallow, verbatim) into the root, in order.
+     * then/else branch of each rule merged into the root, in order (see mergeBranch).
      * Returns the original move unchanged if there's nothing to resolve.
      */
     function resolve(move) {
@@ -59,7 +86,7 @@ window.MoveConditionals = (function() {
         move.if.forEach(rule => {
             const branch = evaluateCondition(rule.condition) ? rule.then : rule.else;
             if (branch) {
-                resolved = { ...resolved, ...branch };
+                resolved = mergeBranch(resolved, branch);
             }
         });
 
