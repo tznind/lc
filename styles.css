@@ -1411,6 +1411,13 @@ input.clock-floating-input:focus {
   pointer-events: none;
 }
 
+/* ...but re-enable real controls (e.g. multi-instance checkboxes) that live inside it -
+   the collapse click-through is only needed on the title background/text itself. */
+.granted-card .move-title input,
+.learned-move .move-title input {
+  pointer-events: auto;
+}
+
 /* === RESPONSIVE LAYOUT FOR MOVE TITLE === */
 /* At medium screen sizes, ensure enough space for button */
 @media (max-width: 1100px) {
