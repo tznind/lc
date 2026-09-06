@@ -12,6 +12,36 @@
         "description": "Unique identifier for the move (must be unique across all moves)",
         "pattern": "^[a-zA-Z0-9]+$"
       },
+      "if": {
+        "type": "array",
+        "description": "Optional array of conditional rules, evaluated in order at render time. Each rule's 'condition' is checked; the matching branch ('then' if true, 'else' if false) has its properties merged verbatim into the move's root, overriding any same-named property (later rules win on conflicts). Only used to vary a move's own properties (e.g. outcomes, takeFrom) based on character state - not applied within submoves.",
+        "items": {
+          "type": "object",
+          "properties": {
+            "condition": {
+              "type": "object",
+              "description": "Condition to test. Currently supports 'hasMove'.",
+              "properties": {
+                "hasMove": {
+                  "type": "string",
+                  "description": "True if the character already has the move with this ID natively from one of their current roles."
+                }
+              },
+              "additionalProperties": false
+            },
+            "then": {
+              "type": "object",
+              "description": "Move properties to merge into the root when the condition is true."
+            },
+            "else": {
+              "type": "object",
+              "description": "Move properties to merge into the root when the condition is false."
+            }
+          },
+          "required": ["condition"],
+          "additionalProperties": false
+        }
+      },
       "title": {
         "type": "string",
         "description": "Display title of the move"

@@ -688,6 +688,37 @@ Create a dedicated "Equipment" role with gear options, then allow players to sel
 
 This creates a dropdown showing all Equipment moves (Weapon, Armor, Vehicle, etc.). Players can select the same item multiple times - perfect for tracking multiple weapons, armor sets, or other gear with individual customization.
 
+### Conditional Moves (if/then/else)
+
+**When to use:** A move's content should change depending on whether the character already has a specific other move.
+
+```json
+{
+  "id": "nav-bh",
+  "title": "Battlehardeneder",
+  "description": "You gain the **Battle Hard** move. If you have it instead add the following extra options:",
+  "if": [
+    {
+      "condition": { "hasMove": "battlehard" },
+      "then": {
+        "outcomes": [
+          { "text": "You can spend a **Valor** to ignore damage from a single attack" }
+        ]
+      },
+      "else": {
+        "takeFrom": ["Lord Commander"],
+        "takeMoves": ["battlehard"]
+      }
+    }
+  ]
+}
+```
+
+**Key Features:**
+- `if` is an array of rules, evaluated in order; each rule's `then` (condition true) or `else` (condition false) properties are merged verbatim into the move's root, later rules winning on conflicts
+- Only `hasMove` is currently supported as a condition - true if the character already has that move natively from one of their current roles (not counting moves picked up via someone else's `takeFrom`)
+- Only affects the move's own root properties (outcomes, takeFrom, etc.) - not evaluated inside submoves
+
 ### Move Categories
 
 **When to use:** To organize moves into logical groups on the character sheet.

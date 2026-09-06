@@ -687,6 +687,10 @@ window.MovesCore = (function() {
      * @param {boolean} isNestedInCard - Whether this move is nested inside a granted card
      */
     function renderMove(move, available, urlParams, isNestedInCard = false) {
+        // Resolve any "if" rules (e.g. hasMove conditions) into the move's root properties
+        if (window.MoveConditionals) {
+            move = window.MoveConditionals.resolve(move);
+        }
         console.log(`renderMove called for move: ${move.id}, grantsCard: ${move.grantsCard}`);
         const moveDiv = document.createElement("div");
         moveDiv.className = "move";

@@ -37,7 +37,11 @@ window.Moves = (function() {
         const moveId = extractMoveId(checkbox);
 
         // Check if this is a takeFrom move that needs special handling
-        const move = window.moves && window.moves.find(m => m.id === moveId);
+        // (resolved, since takeFrom/grantsCard/track may be conditional via "if")
+        let move = window.moves && window.moves.find(m => m.id === moveId);
+        if (move && window.MoveConditionals) {
+            move = window.MoveConditionals.resolve(move);
+        }
         if (move && move.takeFrom && window.TakeFrom) {
             window.TakeFrom.handleTakeFromMoveToggle(moveId, checkbox.checked);
         }

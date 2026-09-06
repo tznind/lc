@@ -405,7 +405,11 @@ window.TakeFrom = (function() {
             moveSelect.disabled = false;
 
             // Get the source move to check for takeCategory/takeMoves filters and allowDuplicates
-            const sourceMove = window.moves && window.moves.find(m => m.id === moveId);
+            // (resolved, since these may be conditional via "if" - see nav-bh)
+            let sourceMove = window.moves && window.moves.find(m => m.id === moveId);
+            if (sourceMove && window.MoveConditionals) {
+                sourceMove = window.MoveConditionals.resolve(sourceMove);
+            }
             const takeCategoryFilter = sourceMove && sourceMove.takeCategory ? sourceMove.takeCategory : null;
             const takeMovesFilter = sourceMove && sourceMove.takeMoves ? sourceMove.takeMoves : null;
             const allowDuplicates = sourceMove && sourceMove.takeFromAllowsDuplicates === true;

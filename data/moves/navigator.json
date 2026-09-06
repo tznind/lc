@@ -138,7 +138,23 @@
     "id":"nav-bh",
     "title": "Battlehardeneder",
     "description": "You gain the **Battle Hard** move.  If you have it instead add the following extra options:",
-    "takeFrom": ["Lord Commander"],
-    "takeMoves":["battlehard"]
+    "if":[
+      {
+        "condition":{
+          "hasMove":"battlehard"
+        },
+        "then":{
+          "outcomes": [
+                  {
+                    "text": "You can spend a **Valor** to ignore damage from a single attack"
+                  }
+                ]
+        },
+        "else":{
+             "takeFrom": ["Lord Commander"],
+          "takeMoves":["battlehard"]
+        }
+      }
+    ]
   }
 ]
