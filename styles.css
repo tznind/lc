@@ -2365,8 +2365,10 @@ hr {
 /* Override absolute positioning for tracks inside cards */
 .card .track-counter {
   position: static;
-  margin: 8px 0;
+  display: inline-flex;
+  margin: 8px 16px 8px 0;
   justify-content: flex-start;
+  vertical-align: top;
 }
 
 /* Override absolute positioning for tracks in main document (outside moves) */
