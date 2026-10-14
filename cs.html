@@ -41,7 +41,11 @@
       <!-- Role selectors support data-roles attribute to limit which roles appear:
            - Comma-separated list: data-roles="Navigator,Mech Adept" 
            - Wildcard for all roles: data-roles="*"
-           - No attribute: shows all roles (same as *) -->
+           - Tag (roles with "tags": ["origin"] in availability.json): data-roles="@origin"
+           - Exclusions: data-roles="*,!Navigator" or data-roles="!@career"
+           - No attribute: shows all roles (same as *)
+           Roles with "hidden": true are left out of * and @tag. Tags let modules
+           add roles to a selector without editing this file. -->
       <div class="role-controls">
         <label for="role">Origin:</label>
         <select id="role" name="role" data-roles="*">

@@ -104,6 +104,8 @@ Define entirely new roles that only appear when the module is enabled:
 }
 ```
 
+New roles show up in any role selector whose `data-roles` is `*`, or an `@tag` that matches the role's `tags`. If `cs.html` uses tags, give the new role the matching tag (e.g. `"tags": ["career"]`) and the module needs no changes outside its own folder. A selector that lists roles by name will not show module roles. See [Role Tags and Selectors](Cookbook.md#role-tags-and-selectors).
+
 ### Removing Moves
 
 Modules can remove base moves (or moves from other modules) by specifying a top-level `_removes` array. Moves listed here are discarded after all selected roles are unioned, regardless of which role granted them:

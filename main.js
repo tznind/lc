@@ -93,27 +93,9 @@
                 selector.removeChild(selector.lastChild);
             }
             
-            // Get allowed roles for this selector from data-roles attribute
-            const allowedRoles = selector.getAttribute('data-roles');
-            let rolesToAdd;
-            
-            if (allowedRoles) {
-                // Parse comma-separated list and trim whitespace
-                const allowedRolesList = allowedRoles.split(',').map(role => role.trim());
-                
-                // Check if wildcard * is present
-                if (allowedRolesList.includes('*')) {
-                    // Use all available roles if * is specified (excluding special roles like Everyone)
-                    rolesToAdd = Object.keys(window.availableMap).filter(role => role !== 'Everyone' && role !== '_removes');
-                } else {
-                    // Filter to only include roles that exist in availableMap (excluding special roles)
-                    rolesToAdd = allowedRolesList.filter(role => window.availableMap.hasOwnProperty(role) && role !== 'Everyone' && role !== '_removes');
-                }
-            } else {
-                // No data-roles attribute, use all available roles (excluding special roles like Everyone)
-                rolesToAdd = Object.keys(window.availableMap).filter(role => role !== 'Everyone' && role !== '_removes');
-            }
-            
+            // Resolve allowed roles from data-roles attribute (names, *, @tag, !exclusions)
+            const rolesToAdd = window.Utils.resolveRoleSpec(selector.getAttribute('data-roles'));
+
             // Add role options
             rolesToAdd.forEach(role => {
                 const option = document.createElement('option');

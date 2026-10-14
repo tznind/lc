@@ -321,6 +321,37 @@ Add descriptive text to roles using the `description` field in `data/availabilit
 }
 ```
 
+### Role Tags and Selectors
+
+Role selectors in `cs.html` choose which roles to list with the `data-roles` attribute. It takes comma-separated tokens:
+
+| Token | Meaning |
+|---|---|
+| `*` | All selectable roles (also used when the attribute is missing or empty) |
+| `@tag` | All selectable roles with that tag |
+| `Name` | That role, if it exists (shown even if hidden) |
+| `!Name` | Exclude that role |
+| `!@tag` | Exclude all roles with that tag |
+
+Tags come from an optional `tags` array on the role in `data/availability.json`. Mark a role `"hidden": true` to keep it out of `*` and `@tag` (e.g. a role that only exists to hold shared moves):
+
+```json
+{
+  "Navigator":   { "_movesFile": "data/moves/navigator.json", "tags": ["career"] },
+  "Void Born":   { "_movesFile": "data/moves/void-born.json", "tags": ["origin"] },
+  "Shared Gear": { "_movesFile": "data/moves/shared-gear.json", "hidden": true }
+}
+```
+
+```html
+<select id="role"  name="role"  data-roles="@origin"></select>
+<select id="role2" name="role2" data-roles="@career"></select>
+```
+
+Prefer tags over listing names. Roles added by [modules](MODULES.md) then show up in the right selector without editing `cs.html`. Roles are listed in `availability.json` order, with module roles after base roles.
+
+The same lookups are available from JavaScript: `Utils.resolveRoleSpec('@origin')`, `Utils.getSelectableRoles()` and `Utils.roleHasTag(role, tag)`.
+
 Descriptions support [text formatting](#text-formatting) including **bold**, *italic*, line breaks (`\n`), and clickable glossary terms.
 
 ---

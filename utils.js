@@ -226,7 +226,66 @@ window.Utils = (function() {
      */
     function getAllAvailableRoles() {
         if (!window.availableMap) return [];
-        return Object.keys(window.availableMap).filter(role => role !== 'Everyone');
+        return Object.keys(window.availableMap).filter(role => role !== 'Everyone' && !role.startsWith('_'));
+    }
+
+    /**
+     * Get all roles a user may pick in a role selector
+     * Excludes "Everyone", special top-level keys (e.g. _removes) and roles marked "hidden": true
+     * @returns {Array<string>} Role names in availableMap order (base roles first, then modules)
+     */
+    function getSelectableRoles() {
+        return getAllAvailableRoles().filter(role => !window.availableMap[role].hidden);
+    }
+
+    /**
+     * Check whether a role carries a tag (from its "tags" array in availability.json)
+     * @param {string} roleName - The role to check
+     * @param {string} tag - Tag to look for (case-insensitive)
+     * @returns {boolean} True if the role has the tag
+     */
+    function roleHasTag(roleName, tag) {
+        const roleData = window.availableMap && window.availableMap[roleName];
+        if (!roleData || !Array.isArray(roleData.tags)) return false;
+        const tagLower = tag.toLowerCase();
+        return roleData.tags.some(t => String(t).toLowerCase() === tagLower);
+    }
+
+    /**
+     * Resolve a role spec (the data-roles attribute syntax) to a list of role names
+     * Comma-separated tokens:
+     *   *         - all selectable roles
+     *   @tag      - all selectable roles with that tag (includes roles added by modules)
+     *   Name      - that role, if it exists (even if hidden)
+     *   !Name     - exclude that role
+     *   !@tag     - exclude all roles with that tag
+     * An empty spec, or one with only exclusions, starts from *.
+     * @param {string} spec - Role spec, e.g. "@origin,!Imperial World"
+     * @returns {Array<string>} Matching role names, in token order then availableMap order
+     */
+    function resolveRoleSpec(spec) {
+        if (!window.availableMap) return [];
+
+        const tokens = (spec || '').split(',').map(t => t.trim()).filter(Boolean);
+        const includes = tokens.filter(t => !t.startsWith('!'));
+        const excludes = tokens.filter(t => t.startsWith('!')).map(t => t.slice(1).trim());
+        if (includes.length === 0) includes.push('*');
+
+        const resolveToken = token => {
+            if (token === '*') return getSelectableRoles();
+            if (token.startsWith('@')) {
+                const tag = token.slice(1).trim();
+                return getSelectableRoles().filter(role => roleHasTag(role, tag));
+            }
+            return getAllAvailableRoles().includes(token) ? [token] : [];
+        };
+
+        const excluded = new Set(excludes.flatMap(resolveToken));
+        const result = [];
+        includes.flatMap(resolveToken).forEach(role => {
+            if (!excluded.has(role) && !result.includes(role)) result.push(role);
+        });
+        return result;
     }
 
     /**
@@ -282,6 +341,9 @@ window.Utils = (function() {
         roleMatchesPattern,
         getMatchingRoles,
         getAllAvailableRoles,
+        getSelectableRoles,
+        roleHasTag,
+        resolveRoleSpec,
         getRoleDescription,
         showLoading,
         hideLoading
